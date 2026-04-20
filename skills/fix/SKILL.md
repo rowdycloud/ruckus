@@ -97,14 +97,19 @@ Write the plan to: `docs/plans/fix-[issue-id-or-name]-plan.md`
 
 **MANDATORY — this stage cannot be skipped.**
 
+**Pre-check:** Before dispatching, verify the plan file from Stage 3:
+1. Confirm the file exists at the expected path
+2. Confirm it contains a `## Tasks` section with at least one task (T1)
+3. If either check fails: warn the human and loop back to Stage 3
+
 Dispatch a subagent to review the plan. Use model `sonnet`. Read `skills/review-plan/SKILL.md` and use its content as the subagent prompt. Pass the plan file path from Stage 3 as the input.
 
 When the subagent returns, display its findings.
 
 **If PASS:** proceed to gate.
-**If NEEDS REVISION:** apply the suggested edits to the plan file, show the human what changed.
+**If NEEDS REVISION:** apply the suggested edits to the plan file, show the human what changed, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 consecutive NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
 
-**Gate:** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
+**Gate (only after PASS or human override):** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
 
 ---
 
@@ -149,6 +154,8 @@ Follow the checklist in `skills/build/spec-reviewer-prompt.md`:
 
 ## STAGE 6: REVIEW
 
+**MANDATORY — this stage cannot be skipped.**
+
 Invoke `/ruckus:review` with a description of the fix. Fix any critical findings. Re-run until clean.
 
 **Gate:** "Review complete. Proceed to verification? (yes / address warnings / abort)"
@@ -156,6 +163,8 @@ Invoke `/ruckus:review` with a description of the fix. Fix any critical findings
 ---
 
 ## STAGE 7: VERIFY
+
+**MANDATORY — this stage cannot be skipped.**
 
 Invoke `/ruckus:verify-all`. Fix failures and re-run until clean.
 
@@ -214,3 +223,29 @@ If test config exists AND verify-all test step is placeholder AND not declined:
 **Check: stop-hook-v1:**
 If `.claude/settings.json` has no `Stop` hook AND verify-all has 2+ meaningful checks AND not declined:
 > "Verification is robust enough to enforce. Add a Stop hook?"
+
+---
+
+## ABORT HANDLING
+
+When the human selects "abort" at any gate, respond based on how far the pipeline progressed:
+
+**Stages 1-2 (no files written):** Acknowledge abort. No cleanup needed.
+
+**Stages 3-4 (plan written, no implementation):** Ask: "Delete the plan file at [path]? (yes / keep it)"
+- If yes: delete the plan file
+- Clear any TodoWrite entries created for this pipeline run
+
+**Stages 5-7 (implementation started):** Offer rollback:
+> "Implementation is in progress. Options:
+> 1. `git stash` — stash all uncommitted changes (recoverable via `git stash pop`)
+> 2. `git checkout .` — discard all uncommitted changes (**irreversible — cannot be undone**)
+> 3. Keep changes as-is — leave working tree dirty for manual review"
+
+If the human selects option 2, require explicit re-confirmation: "This will permanently delete all uncommitted changes. Type 'discard' to confirm."
+
+Wait for human choice. Execute their selection. Then:
+- Clear all TodoWrite entries for this pipeline run
+- Delete the plan file only if the human also confirms
+
+**Always on abort:** End with a clear message: "Pipeline aborted at Stage [N]. [cleanup summary]."
