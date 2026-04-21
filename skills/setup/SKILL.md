@@ -50,11 +50,18 @@ These fields are **required**. Setup does not proceed without them.
 Ask each question. If the human provides "skip" or refuses, explain why it matters and ask again. Only proceed when all 6 are provided.
 
 1. **Stack:** "What's your tech stack? (language, framework, key libraries)"
+   *e.g., "TypeScript, Next.js 14, Prisma, PostgreSQL" or "Python 3.12, FastAPI, SQLAlchemy"*
 2. **Build command:** "What command builds the project? (e.g., `npm run build`, `go build ./...`)"
+   *e.g., `npm run build`, `go build ./...`, `cargo build`*
 3. **Type check:** "What command type-checks? (e.g., `npx tsc --noEmit`, `mypy .`, or 'none')"
+   *e.g., `npx tsc --noEmit`, `mypy .`, `none`*
 4. **Test command:** "What command runs tests? (e.g., `npm test`, `pytest`, or 'none yet')"
+   *e.g., `npm test`, `pytest -x`, `none yet`*
 5. **Convention:** "What's the one pattern or convention agents must always follow in this project?"
+   This is the single most impactful field. Think: what rule would you put in a code review checklist?
+   *e.g., "All API routes must validate input with Zod schemas before processing" or "Repository pattern — data access only through repository classes, never direct DB queries in handlers"*
 6. **Domain:** "In one sentence, what does this project do?"
+   *e.g., "Cannabis compliance platform for tracking inventory from seed to sale" or "Real-time multiplayer game server"*
 
 ---
 
