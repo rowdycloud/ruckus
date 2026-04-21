@@ -47,4 +47,3 @@ Given a set of changed files, review them for bugs, logic errors, security vulne
 - Distinguish severity clearly: critical = will cause bugs/vulnerabilities, warning = should fix, info = optional improvement.
 - Don't flag stylistic preferences — only flag convention violations documented in CLAUDE.md.
 - If code is correct and clean, say so. A short clean review is valuable signal.
-- Check known-pitfalls.md — new code might repeat past mistakes.

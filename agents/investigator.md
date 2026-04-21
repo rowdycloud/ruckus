@@ -60,4 +60,3 @@ Investigate the codebase to identify the root cause, affected files, and propose
 - Cite file paths and line numbers for every claim.
 - If you can't determine root cause with high confidence, say so.
 - Check git blame/log for recent changes to affected files.
-- Check known-pitfalls.md — the issue might match a known pattern.
