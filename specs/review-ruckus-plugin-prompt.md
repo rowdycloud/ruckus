@@ -210,7 +210,7 @@ Read README.md, all SKILL.md files (focus on user-facing text), and any CHANGELO
 **Workflow Clarity:**
 - Is it clear when to use /ruckus:build vs /ruckus:fix?
 - Is it clear when to use /ruckus:review-epic vs /ruckus:audit-epic?
-- Is the relationship between skills explained (build invokes verify-plan, which invokes review, etc.)?
+- Is the relationship between skills explained (build invokes review-plan, which invokes review, etc.)?
 - Is the human gate system explained? Will users understand what "gate" means and what their options are?
 
 **Onboarding Experience:**
@@ -219,7 +219,7 @@ Read README.md, all SKILL.md files (focus on user-facing text), and any CHANGELO
 - Are there examples of known-pitfalls.md entries so users understand the format?
 
 **Missing Documentation:**
-- Is there a troubleshooting section? (What to do when verify-plan gets skipped, when context overflows, when subagents fail)
+- Is there a troubleshooting section? (What to do when review-plan gets skipped, when context overflows, when subagents fail)
 - Is there a "how it works" section explaining the subagent-per-task architecture?
 - Is there guidance on token usage expectations? ("A typical /ruckus:build run uses approximately X tokens")
 - Is there a migration guide for users coming from manual workflows or the workflow-kit predecessor?
