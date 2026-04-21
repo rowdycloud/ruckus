@@ -1,0 +1,23 @@
+agents/agent-preamble.md
+  eaa80a545805a165 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.2",
+  "base_commit_sha": "3df84841670f3c6fca1a046bdbcc51e0c62608a2",
+  "prompts": {
+    "eaa80a545805a165": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "28a46e3b-f6ce-4616-ab23-a9d2d4a8be58",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 11,
+      "total_deletions": 0,
+      "accepted_lines": 11,
+      "overriden_lines": 0
+    }
+  }
+}
