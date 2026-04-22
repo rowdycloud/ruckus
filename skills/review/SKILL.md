@@ -1,6 +1,7 @@
 ---
 name: review
 description: "Parallel 3-agent code review: code-reviewer, static-analysis, and silent-failure-hunter. Synthesizes findings into severity-grouped report. Use after implementation or standalone."
+disable-model-invocation: true
 ---
 
 # Code Review
