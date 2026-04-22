@@ -16,9 +16,22 @@ The install format is `plugin-name@publisher` — `rowdy-cloud` is the marketpla
 /ruckus:setup
 ```
 
-Setup detects your project's maturity level, collects essential context (stack, build commands, conventions), and creates the documentation structure that powers all Ruckus skills.
+Setup detects your project's maturity level (greenfield/scaffolded/established based on source file count), collects essential context (stack, build commands, conventions), and creates the documentation structure that powers all Ruckus skills.
+
+**What setup creates:**
+
+| File | Purpose |
+| ---- | ------- |
+| `docs/claude/CLAUDE.md` | Project stack, commands, conventions — read by all agents |
+| `docs/claude/known-pitfalls.md` | Gotchas discovered during development |
+| `docs/claude/.workflow-upgrades` | Tracks maturity checks and plugin version |
+| `.claudeignore` | Keeps large/irrelevant files out of agent context |
+| `.claude/settings.json` | Claude Code hooks (e.g., auto-format on save) |
+| `CLAUDE.md` *(root copy)* | Auto-loaded by Claude Code — edit `docs/claude/CLAUDE.md` instead |
 
 ## How It Works
+
+Ruckus uses **subagents** — separate Claude processes dispatched for isolated tasks. The skill driving the pipeline is the **orchestrator**; it coordinates but doesn't implement. This separation keeps each agent's context clean and focused.
 
 Ruckus pipelines are built on four architectural ideas:
 
@@ -184,6 +197,8 @@ Ruckus checks for upgrade opportunities at the end of every build/fix run:
 Check IDs are versioned. When a plugin update improves a check, the version bumps and previously-declined checks are re-offered with an explanation of what changed.
 
 **Responses:** `yes` (apply) / `not yet` (ask again next run) / `never` (don't ask again for this version)
+
+Upgrade state is stored in `docs/claude/.workflow-upgrades`. To reset a "never" decision, remove the corresponding `[check-id]-declined` line from that file.
 
 ## Token Usage
 
