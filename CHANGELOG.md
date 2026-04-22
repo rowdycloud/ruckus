@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Compressed implementer-prompt.md from ~170 words to ~80 words (saves ~1K tokens per build run)
+- Removed duplicate known-pitfalls rules from code-reviewer, silent-failure-hunter, investigator agents
+
+### Added
+
+- Context compaction boundaries after Stages 4, 5, 6 in build and fix pipelines (saves 8K-12K tokens per run)
+- Shared agent-preamble.md as canonical reference for project context loading instructions
+
 ## 0.1.0 — 2026-04-20
 
 Initial release.

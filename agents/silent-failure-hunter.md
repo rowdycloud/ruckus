@@ -54,4 +54,3 @@ Given a set of changed files, hunt for swallowed errors, missing error handling,
 - Not every catch block is wrong — evaluate whether the error handling is appropriate for the context.
 - Focus on changed files, but check if changes introduce new failure paths in existing code.
 - "Fails loudly" means: the error surfaces to where it can be handled appropriately, logged meaningfully, or shown to the user — not necessarily an unhandled crash.
-- Check known-pitfalls.md for domain-specific silent failure patterns.

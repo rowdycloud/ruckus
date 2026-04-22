@@ -104,6 +104,8 @@ When the subagent returns, display its findings.
 
 **Gate (only after PASS or human override):** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
 
+Compact context before implementation. Preserve: feature summary, plan file path, PASS verdict. The plan file on disk contains all implementation details — re-read it in Stage 5.
+
 ---
 
 ## STAGE 5: IMPLEMENT (subagent-per-task)
@@ -147,6 +149,8 @@ After all tasks are complete:
 
 **Gate:** "Implementation complete. [N] tasks executed, all passing. Summary: [task list with status]. Proceed to review? (yes / adjust / abort)"
 
+Compact context before review. Preserve: feature summary, list of all files changed, task completion count, any verification warnings or deviations.
+
 ---
 
 ## STAGE 6: REVIEW
@@ -158,6 +162,8 @@ Invoke `/ruckus:review` (or the project's review command) with a description of 
 Fix any critical findings. Re-run review until clean.
 
 **Gate:** "Review complete. Proceed to verification? (yes / address warnings / abort)"
+
+Compact context before verification. Preserve: feature summary, files changed, review verdict, any deferred warnings.
 
 ---
 

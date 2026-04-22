@@ -93,6 +93,7 @@ Intake → Discover → Plan → Review Plan → Implement → Review → Verify
 - Plan review is mandatory and dispatched as a blocking subagent
 - UI work detected per-task via `UI: yes/no` flag (loads frontend-design automatically)
 - Human gates at every stage transition
+- Context compacted after Stages 4, 5, 6 to prevent overflow on longer builds
 
 ## Pipeline: `/ruckus:fix`
 
@@ -105,7 +106,7 @@ Intake → Investigate → Plan → Review Plan → Implement → Review → Ver
 **Key differences from build:**
 
 - Stage 2 dispatches the investigator agent (or performs inline if agent doesn't exist)
-- Compacts context before investigation to preserve headroom
+- Compacts context before investigation and after Stages 4, 5, 6
 - Commit messages use `fix:` prefix with issue ID reference
 - Self-upgrades: offers to create investigator agent when project reaches 50+ files
 
@@ -207,6 +208,7 @@ Approximate token consumption per skill invocation. Actual usage varies with pro
 **Symptom:** Agent loses track of earlier tasks or gives confused output late in a build.
 **Cause:** Too many tasks in the plan for a single context window.
 **Fix:** Break large features into smaller builds (5-7 tasks max per run). If mid-run, abort and split remaining tasks into a second `/ruckus:build`.
+Ruckus automatically compacts context after Stages 4, 5, and 6 to reduce overflow risk, but very large plans (10+ tasks) may still hit limits.
 
 ### Subagent returns empty or fails
 
