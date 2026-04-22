@@ -122,7 +122,38 @@ For each task in order, dispatch a fresh implementation subagent. Use model `son
 
 **Implementation subagent prompt (constructed per-task):**
 
-Read `skills/build/implementer-prompt.md` and fill in the template variables for this specific task.
+Fill in the `{{VARIABLES}}` below for this specific task. For UI tasks (`UI: yes` in the plan), include the "UI Task" section. For non-UI tasks (`UI: no`), omit the "UI Task" section entirely.
+
+```
+You are implementing a single task for {{PROJECT_NAME}}.
+
+## Task
+
+{{TASK_TITLE}}
+
+**Files:** {{TASK_FILES}}
+**Action:** {{TASK_ACTION}}
+**Details:** {{TASK_DETAILS}}
+**Verify:** {{TASK_VERIFY_COMMAND}}
+
+## Context
+
+Read CLAUDE.md and docs/claude/known-pitfalls.md before implementing.
+
+## UI Task (include ONLY when plan task has UI: yes — omit entirely for UI: no)
+
+Invoke `frontend-design` skill if available. If unavailable, apply design system conventions from CLAUDE.md directly.
+
+## Rules
+
+- Implement ONLY this task — do NOT modify files outside the task's file list
+- Run verification after changes: {{TASK_VERIFY_COMMAND}} — fix failures before returning
+- If unclear or blocked, return a question instead of guessing
+
+## Return
+
+Files changed, verification result (pass/fail), any deviations or blocking questions.
+```
 
 ### 5c. Two-stage review after each task
 
