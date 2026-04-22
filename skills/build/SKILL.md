@@ -160,7 +160,7 @@ Files changed, verification result (pass/fail), any deviations or blocking quest
 After each subagent returns:
 
 **Stage 1 — Spec compliance (orchestrator performs inline):**
-Follow the checklist in `skills/build/spec-reviewer-prompt.md`:
+Run the spec compliance checklist:
 - Did the subagent modify only the files listed in the task?
 - Did the verification command pass?
 - Does the implementation match the task description?
