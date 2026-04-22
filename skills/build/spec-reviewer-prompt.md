@@ -1,4 +1,7 @@
-<!-- Shared between build and fix pipelines. Fix-specific criteria belong in the plan's task descriptions, not here. -->
+<!-- REFERENCE ONLY — the spec compliance checklist is inlined into build/SKILL.md and fix/SKILL.md Stage 5c.
+     This file is the canonical reference copy. The inline versions in the pipeline SKILL.md files are
+     the runtime copies. Shared between build and fix pipelines. Fix-specific criteria belong in the
+     plan's task descriptions, not here. -->
 
 # Spec Compliance Review Prompt
 

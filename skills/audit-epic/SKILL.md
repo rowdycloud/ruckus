@@ -83,6 +83,8 @@ Acceptance Criteria:
 **Missing coverage:** [gaps found]
 ```
 
+Compact context after all per-story subagents return. Preserve: epic title, story ID list, per-story AC status table (MET/PARTIALLY MET/NOT MET per AC), quality flags and missing coverage notes. Full evidence citations and file:line references from subagent reports are NOT needed for cross-cutting analysis — the status verdicts carry the signal.
+
 ---
 
 ## STEP 4: CROSS-CUTTING REVIEW

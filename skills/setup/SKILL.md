@@ -139,7 +139,8 @@ Based on detected maturity:
 > "Project is scaffolded. Standard configuration applied."
 
 **Established:**
-> "Project is established ([N] files). Offer: create investigator agent now? (yes / not yet)"
+> "Project is established ([N] files). Enable the investigator agent for `/ruckus:fix`? It traces code paths to diagnose bugs. (yes / not yet)"
+If yes: record `investigator-v1-added YYYY-MM-DD` in `docs/claude/.workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
 ---
 

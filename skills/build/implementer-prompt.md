@@ -1,3 +1,7 @@
+<!-- REFERENCE ONLY — this template is inlined into build/SKILL.md and fix/SKILL.md Stage 5b.
+     Edit the inline copies in those files for runtime changes. Update this file to keep the
+     canonical reference in sync. -->
+
 # Implementation Subagent Prompt
 
 You are implementing a single task for {{PROJECT_NAME}}.

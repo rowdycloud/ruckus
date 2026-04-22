@@ -35,9 +35,9 @@ Ask: **"Is this the correct issue? (yes / adjust / abort)"**
 
 First, compact context to preserve headroom for investigation (investigation involves extensive search/read operations).
 
-Dispatch the `investigator` agent (if it exists at `.claude/agents/investigator.md`) with the issue description.
+If `investigator-v1-added` is recorded in `docs/claude/.workflow-upgrades`, dispatch the `investigator` agent with the issue description.
 
-If the investigator agent does NOT exist, perform investigation inline:
+If the investigator is not enabled, perform investigation inline:
 1. Search for relevant code using the issue description
 2. Trace the execution path
 3. Identify the root cause or narrow candidates
@@ -102,14 +102,16 @@ Write the plan to: `docs/plans/fix-<issue-id-or-name>-plan.md` (e.g., `fix-GH-42
 2. Confirm it contains a `## Tasks` section with at least one task (T1)
 3. If either check fails: warn the human and loop back to Stage 3
 
-Dispatch a subagent to review the plan. Use model `sonnet`. Read `skills/review-plan/SKILL.md` and use its content as the subagent prompt. Pass the plan file path from Stage 3 as the input.
+Dispatch `/ruckus:review-plan` as a blocking subagent call. Use model `sonnet`. Pass the plan file path from Stage 3 as the input.
 
 When the subagent returns, display its findings.
 
 **If PASS:** proceed to gate.
 **If NEEDS REVISION:** apply the suggested edits to the plan file, show the human what changed, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 consecutive NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
 
-**Gate (only after PASS or human override):** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
+**Gate (only after PASS or explicit override):** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
+
+**Override protocol:** If the human wants to proceed without PASS, they must explicitly say "override." Ambiguous responses ("skip it," "good enough," "it's fine") are NOT overrides — ask for clarification. When override is confirmed, display: "Proceeding without plan review PASS. The plan has not been verified against the codebase."
 
 Compact context before implementation. Preserve: issue summary with root cause, plan file path, PASS verdict. The plan file on disk contains all implementation details — re-read it in Stage 5.
 
@@ -127,14 +129,47 @@ Read the verified plan. Create a TodoWrite entry for each task. Note task depend
 
 For each task in order, dispatch a fresh implementation subagent. Use model `sonnet`.
 
-Read `skills/build/implementer-prompt.md` and fill in the template variables for this specific task.
+**Implementation subagent prompt (constructed per-task):**
+
+Fill in the `{{VARIABLES}}` below for this specific task. For UI tasks (`UI: yes` in the plan), include the "UI Task" section. For non-UI tasks (`UI: no`), omit the "UI Task" section entirely.
+
+```
+You are implementing a single task for {{PROJECT_NAME}}.
+
+## Task
+
+{{TASK_TITLE}}
+
+**Files:** {{TASK_FILES}}
+**Action:** {{TASK_ACTION}}
+**Details:** {{TASK_DETAILS}}
+**Verify:** {{TASK_VERIFY_COMMAND}}
+
+## Context
+
+Read CLAUDE.md and docs/claude/known-pitfalls.md before implementing.
+
+## UI Task (include ONLY when plan task has UI: yes — omit entirely for UI: no)
+
+Invoke `frontend-design` skill if available. If unavailable, apply design system conventions from CLAUDE.md directly.
+
+## Rules
+
+- Implement ONLY this task — do NOT modify files outside the task's file list
+- Run verification after changes: {{TASK_VERIFY_COMMAND}} — fix failures before returning
+- If unclear or blocked, return a question instead of guessing
+
+## Return
+
+Files changed, verification result (pass/fail), any deviations or blocking questions.
+```
 
 ### 5c. Two-stage review after each task
 
 After each subagent returns:
 
 **Stage 1 — Spec compliance (orchestrator performs inline):**
-Follow the checklist in `skills/build/spec-reviewer-prompt.md`:
+Run the spec compliance checklist:
 - Did the subagent modify only the files listed in the task?
 - Did the verification command pass?
 - Does the implementation match the task description?
@@ -215,8 +250,9 @@ Read CLAUDE.md. If missing build command, type check command, or stack summary, 
 Continue with whatever the human provides — not a hard block, but a visible gap.
 
 **Check: investigator-v1:**
-If `.claude/agents/investigator.md` does NOT exist AND source file count > 50 AND not declined:
-> "This project has [N] source files but no investigator agent. It improves bug diagnosis — especially for `/ruckus:fix`. Create one?"
+If no `investigator-v1-added` in `docs/claude/.workflow-upgrades` AND source file count > 50 AND not declined:
+> "This project has [N] source files but the investigator agent isn't enabled. It improves bug diagnosis for `/ruckus:fix`. Enable it? (yes / not yet / never)"
+If yes: record `investigator-v1-added YYYY-MM-DD` in `docs/claude/.workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
 **Check: pitfalls-organized-v1:**
 If `docs/claude/known-pitfalls.md` > 80 lines AND no `pitfalls-organized-v1` within last 30 days:

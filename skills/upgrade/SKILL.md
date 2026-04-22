@@ -16,7 +16,7 @@ Compare installed Ruckus files against the latest plugin templates. Apply struct
 **Version check:** Read `docs/claude/.workflow-upgrades` and extract the `ruckus-version` line. Read `.claude-plugin/plugin.json` for the current plugin version. If they differ:
 > "Plugin version changed: [installed] → [current]. Structural diffs below may include changes from the version bump, not just your edits."
 
-If `.workflow-upgrades` is missing or has no version line, warn:
+If `docs/claude/.workflow-upgrades` is missing or has no version line, warn:
 > "No installed version recorded. Run `/ruckus:setup` to initialize, or proceeding will compare against current plugin templates."
 
 After displaying the version status, enumerate all template files in the plugin's `skills/setup/templates/` directory dynamically. For each template, determine its installed counterpart:
