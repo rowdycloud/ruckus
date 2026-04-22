@@ -10,7 +10,21 @@
 ### Added
 
 - Context compaction boundaries after Stages 4, 5, 6 in build and fix pipelines (saves 8K-12K tokens per run)
-- Shared agent-preamble.md as canonical reference for project context loading instructions
+- Shared agent-preamble.md as canonical sync reference for project context loading instructions (agents inline preamble text; file is the single source of truth for manual sync)
+- Abort handling sections in build and fix pipelines (staged cleanup based on pipeline progress)
+- Plan file validation pre-check before Stage 4 dispatch
+- MANDATORY markers on Stages 6 and 7
+- Stack-aware section comments in claudeignore.template (delete-if-not-using guidance per stack)
+- Example pitfall entries in known-pitfalls.md.template (Domain-Specific, Data & State, Integration)
+- Plan naming convention: `docs/plans/<feature-name>-plan.md` and `docs/plans/fix-<issue>-plan.md`
+- Inlined implementer-prompt.md and spec-reviewer-prompt.md into build and fix pipeline SKILL.md files (eliminates plugin-relative file path dependencies)
+- Explicit override protocol for Stage 4 plan review gate (requires human to say "override" — ambiguous responses rejected)
+- `disable-model-invocation: true` added to review/SKILL.md
+- Context compaction boundary after audit-epic Step 3 (prevents 3K-5K token accumulation during synthesis)
+- Subagent/orchestrator terminology defined in README How It Works section
+- Setup file list added to README Quick Start section
+- `.workflow-upgrades` file location documented in README Self-Upgrading section
+- Slash-command dispatch (`/ruckus:review-plan`) replaces file-read dispatch in Stage 4
 
 ## 0.1.0 — 2026-04-20
 
