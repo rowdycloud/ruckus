@@ -102,14 +102,16 @@ Write the plan to: `docs/plans/fix-<issue-id-or-name>-plan.md` (e.g., `fix-GH-42
 2. Confirm it contains a `## Tasks` section with at least one task (T1)
 3. If either check fails: warn the human and loop back to Stage 3
 
-Dispatch a subagent to review the plan. Use model `sonnet`. Read `skills/review-plan/SKILL.md` and use its content as the subagent prompt. Pass the plan file path from Stage 3 as the input.
+Dispatch `/ruckus:review-plan` as a blocking subagent call. Use model `sonnet`. Pass the plan file path from Stage 3 as the input.
 
 When the subagent returns, display its findings.
 
 **If PASS:** proceed to gate.
 **If NEEDS REVISION:** apply the suggested edits to the plan file, show the human what changed, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 consecutive NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
 
-**Gate (only after PASS or human override):** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
+**Gate (only after PASS or explicit override):** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
+
+**Override protocol:** If the human wants to proceed without PASS, they must explicitly say "override." Ambiguous responses ("skip it," "good enough," "it's fine") are NOT overrides — ask for clarification. When override is confirmed, display: "Proceeding without plan review PASS. The plan has not been verified against the codebase."
 
 Compact context before implementation. Preserve: issue summary with root cause, plan file path, PASS verdict. The plan file on disk contains all implementation details — re-read it in Stage 5.
 
