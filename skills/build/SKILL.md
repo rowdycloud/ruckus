@@ -247,8 +247,9 @@ Read CLAUDE.md. If it's missing build command, type check command, or stack summ
 Continue with whatever the human provides — not a hard block, but a visible gap.
 
 **Check: investigator-v1:**
-If `.claude/agents/investigator.md` does NOT exist AND source file count > 50 AND not declined:
-> "This project has [N] source files but no investigator agent. It improves bug diagnosis. Create one?"
+If no `investigator-v1-added` in `docs/claude/.workflow-upgrades` AND source file count > 50 AND not declined:
+> "This project has [N] source files but the investigator agent isn't enabled. It improves bug diagnosis for `/ruckus:fix`. Enable it? (yes / not yet / never)"
+If yes: record `investigator-v1-added YYYY-MM-DD` in `.workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
 **Check: pitfalls-organized-v1:**
 If `docs/claude/known-pitfalls.md` > 80 lines AND no `pitfalls-organized-v1` within last 30 days:

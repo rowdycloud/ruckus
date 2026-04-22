@@ -35,9 +35,9 @@ Ask: **"Is this the correct issue? (yes / adjust / abort)"**
 
 First, compact context to preserve headroom for investigation (investigation involves extensive search/read operations).
 
-Dispatch the `investigator` agent (if it exists at `.claude/agents/investigator.md`) with the issue description.
+If `investigator-v1-added` is recorded in `docs/claude/.workflow-upgrades`, dispatch the `investigator` agent with the issue description.
 
-If the investigator agent does NOT exist, perform investigation inline:
+If the investigator is not enabled, perform investigation inline:
 1. Search for relevant code using the issue description
 2. Trace the execution path
 3. Identify the root cause or narrow candidates
@@ -250,8 +250,9 @@ Read CLAUDE.md. If missing build command, type check command, or stack summary, 
 Continue with whatever the human provides — not a hard block, but a visible gap.
 
 **Check: investigator-v1:**
-If `.claude/agents/investigator.md` does NOT exist AND source file count > 50 AND not declined:
-> "This project has [N] source files but no investigator agent. It improves bug diagnosis — especially for `/ruckus:fix`. Create one?"
+If no `investigator-v1-added` in `docs/claude/.workflow-upgrades` AND source file count > 50 AND not declined:
+> "This project has [N] source files but the investigator agent isn't enabled. It improves bug diagnosis for `/ruckus:fix`. Enable it? (yes / not yet / never)"
+If yes: record `investigator-v1-added YYYY-MM-DD` in `.workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
 **Check: pitfalls-organized-v1:**
 If `docs/claude/known-pitfalls.md` > 80 lines AND no `pitfalls-organized-v1` within last 30 days:
