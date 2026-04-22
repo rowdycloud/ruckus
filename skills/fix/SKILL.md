@@ -87,7 +87,7 @@ Using the investigation report, write a fix plan. Same format as `/ruckus:build`
 - Watch for: [side effects]
 ```
 
-Write the plan to: `docs/plans/fix-[issue-id-or-name]-plan.md`
+Write the plan to: `docs/plans/fix-<issue-id-or-name>-plan.md` (e.g., `fix-GH-42-plan.md`)
 
 **Gate:** "Fix plan drafted with [N] tasks. Proceed to plan review? (yes / revise plan / abort)"
 

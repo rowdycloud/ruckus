@@ -11,13 +11,31 @@ Pitfalls discovered through development. Updated by `/ruckus:build` and `/ruckus
 
 <!-- Pitfalls related to the project's domain logic -->
 
+<!-- EXAMPLE (delete this block):
+### Timezone math uses server locale
+Date calculations in `src/utils/dates.ts` default to the server's timezone.
+All date math must explicitly use UTC or the user's stored timezone — never rely on the runtime locale.
+-->
+
 ## Data & State
 
 <!-- Pitfalls related to data handling, state management, persistence -->
 
+<!-- EXAMPLE (delete this block):
+### Soft-deleted records leak into queries
+The `users` table has a `deleted_at` column but default queries don't filter it.
+Always add `WHERE deleted_at IS NULL` (or use the `active` scope) unless you specifically need deleted records.
+-->
+
 ## Integration
 
 <!-- Pitfalls related to APIs, third-party services, cross-system communication -->
+
+<!-- EXAMPLE (delete this block):
+### Third-party webhook retries cause duplicate processing
+The payment provider retries failed webhooks up to 5 times. Handlers must be idempotent —
+check for existing transaction records before processing.
+-->
 
 ## Build & Deploy
 

@@ -76,7 +76,7 @@ Using the discovery report, write an implementation plan. The plan MUST be struc
 
 Each task should be 2-5 minutes of work. If a task feels larger, break it down. Tasks must include exact file paths and be specific enough that a fresh subagent with no project history can execute them.
 
-Write the plan to a file: `docs/plans/[feature-name]-plan.md`
+Write the plan to a file: `docs/plans/<feature-name>-plan.md` (e.g., `user-dashboard-plan.md`)
 
 Present the plan summary to the human.
 

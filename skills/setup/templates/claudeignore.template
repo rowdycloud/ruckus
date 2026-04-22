@@ -1,15 +1,4 @@
-# Dependencies
-node_modules/
-vendor/
-.venv/
-__pycache__/
-
-# Build output
-dist/
-build/
-.next/
-out/
-target/
+# === Always ===
 
 # IDE and OS
 .idea/
@@ -18,20 +7,7 @@ target/
 .DS_Store
 Thumbs.db
 
-# Large files
-*.lock
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
-
-# Generated
-*.min.js
-*.min.css
-*.map
-coverage/
-.nyc_output/
-
-# Media
+# Media and fonts
 *.png
 *.jpg
 *.jpeg
@@ -44,3 +20,29 @@ coverage/
 *.woff2
 *.ttf
 *.eot
+
+# === JavaScript / TypeScript (delete section if not using) ===
+node_modules/
+dist/
+build/
+.next/
+out/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.min.js
+*.min.css
+*.map
+coverage/
+.nyc_output/
+
+# === Python (delete section if not using) ===
+.venv/
+__pycache__/
+
+# === Go / Rust / Other (delete section if not using) ===
+vendor/
+target/
+
+# === Lock files (keep what applies) ===
+*.lock
