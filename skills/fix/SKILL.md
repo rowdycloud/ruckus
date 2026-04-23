@@ -8,6 +8,8 @@ disable-model-invocation: true
 
 You are the fix orchestrator. Drive this pipeline sequentially with human gates at each stage. You coordinate — subagents implement.
 
+**CRITICAL:** Do NOT use Claude Code's built-in plan mode (EnterPlanMode/ExitPlanMode). Present all gates as inline text prompts in the conversation. The pipeline has its own gate protocol — Claude Code's plan mode will hijack the flow and skip stages.
+
 ## Context
 - Changed files: !`git diff --name-only HEAD 2>/dev/null || echo "clean"`
 - Current branch: !`git branch --show-current 2>/dev/null || echo "no branch"`
@@ -89,13 +91,13 @@ Using the investigation report, write a fix plan. Same format as `/ruckus:build`
 
 Write the plan to: `docs/plans/fix-<issue-id-or-name>-plan.md` (e.g., `fix-GH-42-plan.md`)
 
-**Gate:** "Fix plan drafted with [N] tasks. Proceed to plan review? (yes / revise plan / abort)"
+Do NOT present the plan to the human yet — proceed directly to Stage 4.
 
 ---
 
 ## STAGE 4: REVIEW PLAN
 
-**MANDATORY — this stage cannot be skipped.**
+**MANDATORY — this stage cannot be skipped. Do NOT present the plan to the human before this stage completes.**
 
 **Pre-check:** Before dispatching, verify the plan file from Stage 3:
 1. Confirm the file exists at the expected path
@@ -104,12 +106,11 @@ Write the plan to: `docs/plans/fix-<issue-id-or-name>-plan.md` (e.g., `fix-GH-42
 
 Dispatch `/ruckus:review-plan` as a blocking subagent call. Use model `sonnet`. Pass the plan file path from Stage 3 as the input.
 
-When the subagent returns, display its findings.
+**If NEEDS REVISION:** apply the suggested edits to the plan file, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 consecutive NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
 
-**If PASS:** proceed to gate.
-**If NEEDS REVISION:** apply the suggested edits to the plan file, show the human what changed, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 consecutive NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
+**After review completes:** NOW present the plan and review results to the human. Display the plan summary, task count, root cause, and the review verdict (PASS or outstanding concerns).
 
-**Gate (only after PASS or explicit override):** "Plan review complete. [summary]. Ready to implement? (yes / revise further / abort)"
+**Gate (only after PASS or explicit override):** "Fix plan drafted with [N] tasks and verified against the codebase. [Review summary]. Ready to implement? (yes / revise plan / abort)"
 
 **Override protocol:** If the human wants to proceed without PASS, they must explicitly say "override." Ambiguous responses ("skip it," "good enough," "it's fine") are NOT overrides — ask for clarification. When override is confirmed, display: "Proceeding without plan review PASS. The plan has not been verified against the codebase."
 
