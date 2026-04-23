@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Tighten README opener and Quick Start bridging text
+- Rename "Self-Upgrading" section to "Upgrade Checks"
+- Trim redundant build pipeline bullets (covered in How It Works)
+- Add "Built with Ruckus" invitation section
+- Add issue-first step to CONTRIBUTING PR process
+- Add CODE_OF_CONDUCT.md (Contributor Covenant v2.1)
+
 ## [0.1.0] — 2026-04-22
 
 First public release.
