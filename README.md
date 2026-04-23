@@ -285,7 +285,8 @@ Ruckus automatically compacts context after Stages 4, 5, and 6 to reduce overflo
 ```text
 ruckus/
 ├── .claude-plugin/
-│   └── plugin.json
+│   ├── plugin.json
+│   └── marketplace.json
 ├── skills/
 │   ├── build/          (feature pipeline + subagent templates)
 │   ├── fix/            (bug fix pipeline)
@@ -302,8 +303,7 @@ ruckus/
 ├── CONTRIBUTING.md
 ├── README.md
 ├── CHANGELOG.md
-├── LICENSE
-└── marketplace.json
+└── LICENSE
 ```
 
 ## Built with Ruckus
