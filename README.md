@@ -1,6 +1,6 @@
 # Ruckus
 
-Gated development pipelines with subagent-per-task execution. Ruckus is a Claude Code plugin that leverages iterative, subagent-driven development. Discover, plan, verify, implement, review, ship.
+Ruckus is a Claude Code plugin for gated, subagent-per-task development pipelines. The orchestrator dispatches a fresh subagent for each task — discovery, planning, implementation, review — with a human confirmation gate between every stage.
 
 ## Installation
 
@@ -37,6 +37,8 @@ Setup detects your project's maturity level (greenfield/scaffolded/established b
 /ruckus:setup                          # answer 6 questions about your project
 
 # 2. Write a small spec (one file, a few lines)
+# Ruckus builds from epic files — plain Markdown specs you keep in docs/epics/.
+# Here's a minimal one:
 cat > docs/epics/add-health-endpoint.md << 'EOF'
 # Add Health Endpoint
 ## Story 1: GET /health
@@ -123,9 +125,6 @@ Intake → Discover → Plan → Review Plan → Implement → Review → Verify
 
 **Key behaviors:**
 
-- Each task in the plan gets a fresh subagent (prevents context overflow)
-- Two-stage review after every task (spec compliance + quality check)
-- Plan review is mandatory and dispatched as a blocking subagent
 - UI work detected per-task via `UI: yes/no` flag (loads frontend-design automatically)
 - Human gates at every stage transition
 - Context compacted after Stages 4, 5, 6 to prevent overflow on longer builds
@@ -205,7 +204,7 @@ Ruckus adapts to your project's size, detected by source file count during setup
 | Scaffolded | 10-50 | Standard configuration. All verification checks active if commands were provided during setup. Doc-writer agent runs at wrap-up. |
 | Established | 50+ | Setup offers to create investigator agent immediately. Stop hook offered when verify-all has 2+ meaningful checks. `pitfalls-organized` check activates when known-pitfalls.md exceeds 80 lines. |
 
-## Self-Upgrading
+## Upgrade Checks
 
 Ruckus checks for upgrade opportunities at the end of every build/fix run:
 
@@ -304,6 +303,10 @@ ruckus/
 ├── LICENSE
 └── marketplace.json
 ```
+
+## Built with Ruckus
+
+Using Ruckus on a project? Open an issue or PR to add it here — I'd love to see what you're building.
 
 ## Contributing
 

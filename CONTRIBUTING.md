@@ -1,5 +1,7 @@
 # Contributing to Ruckus
 
+This project follows the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you agree to uphold it.
+
 ## Getting Started
 
 1. Fork and clone the repo
@@ -30,10 +32,11 @@ Open an issue to discuss before submitting a PR for these areas.
 
 ## PR Process
 
-1. Fork → branch → PR against `main`
-2. Include an updated CHANGELOG entry under `[Unreleased]`
-3. If the change involves a design decision, draft an ADR (see `docs/adrs/README.md`)
-4. Ensure skills stay under 300 lines and agents under 500 words
+1. For non-trivial changes, open an issue first to discuss the approach
+2. Fork → branch → PR against `main`
+3. Include an updated CHANGELOG entry under `[Unreleased]`
+4. If the change involves a design decision, draft an ADR (see `docs/adrs/README.md`)
+5. Ensure skills stay under 300 lines and agents under 500 words
 
 ## Code Standards
 
