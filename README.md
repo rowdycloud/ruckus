@@ -5,10 +5,10 @@ Gated development pipelines with subagent-per-task execution. Ruckus is a Claude
 ## Installation
 
 ```sh
-/plugin install ruckus@rowdy-cloud
+/plugin install ruckus@nickkirkes
 ```
 
-The install format is `plugin-name@publisher` — `rowdy-cloud` is the marketplace publisher. If install fails: check that Claude Code is v1.0+ (`claude --version`), verify internet access, and try `/plugin list` to confirm marketplace connectivity. As a fallback, clone the repo manually into `~/.claude/plugins/ruckus/`.
+The install format is `plugin-name@publisher` — `nickkirkes` is the marketplace publisher. If install fails: check that Claude Code is v1.0+ (`claude --version`), verify internet access, and try `/plugin list` to confirm marketplace connectivity. As a fallback, clone the repo manually into `~/.claude/plugins/ruckus/`.
 
 ## Quick Start
 
@@ -33,7 +33,7 @@ Setup detects your project's maturity level (greenfield/scaffolded/established b
 
 ```sh
 # 1. Install and set up
-/plugin install ruckus@rowdy-cloud
+/plugin install ruckus@nickkirkes
 /ruckus:setup                          # answer 6 questions about your project
 
 # 2. Write a small spec (one file, a few lines)

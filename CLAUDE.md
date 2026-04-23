@@ -1,6 +1,6 @@
 # Ruckus
 
-Ruckus is a Claude Code plugin that implements gated development pipelines with subagent-per-task execution. MIT licensed, by Rowdy Cloud.
+Ruckus is a Claude Code plugin that implements gated development pipelines with subagent-per-task execution. MIT licensed, by Nick Kirkes.
 
 This is a plugin, not a standalone app. It runs inside Claude Code sessions in the user's project.
 
