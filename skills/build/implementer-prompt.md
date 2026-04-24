@@ -17,7 +17,7 @@ You are implementing a single task for {{PROJECT_NAME}}.
 
 ## Context
 
-Read CLAUDE.md and docs/claude/known-pitfalls.md before implementing.
+Read CLAUDE.md and .ruckus/known-pitfalls.md before implementing.
 
 {{#IF_UI_TASK}}
 ## UI Task

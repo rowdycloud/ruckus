@@ -11,4 +11,4 @@
 
 Before starting your task, read these files:
 1. **CLAUDE.md** -- project conventions, commands, and stack
-2. **docs/claude/known-pitfalls.md** -- known issues to avoid repeating
+2. **.ruckus/known-pitfalls.md** -- known issues to avoid repeating

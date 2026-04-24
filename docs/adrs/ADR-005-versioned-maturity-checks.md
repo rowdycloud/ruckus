@@ -14,7 +14,7 @@ The question is how to offer these upgrades without nagging users who've decided
 
 ## Decision
 
-Maturity checks run at the wrap-up stage of every `/ruckus:build` and `/ruckus:fix` invocation. Each check has a versioned ID (e.g., `investigator-v1`, `test-verify-v1`). User responses are recorded in `docs/claude/.workflow-upgrades` with the format `[check-id]-[added|declined] YYYY-MM-DD`.
+Maturity checks run at the wrap-up stage of every `/ruckus:build` and `/ruckus:fix` invocation. Each check has a versioned ID (e.g., `investigator-v1`, `test-verify-v1`). User responses are recorded in `.ruckus/workflow-upgrades` with the format `[check-id]-[added|declined] YYYY-MM-DD`.
 
 Three response options per check: **yes** (apply the upgrade), **not yet** (ask again next run), **never** (stop asking for this version).
 
@@ -48,3 +48,5 @@ The three-response UX (yes / not yet / never) respects user autonomy. "Not yet" 
 
 ### Neutral
 - The upgrades file doubles as a lightweight project history — you can see when the investigator was added, when tests were integrated, etc.
+
+> **Note (v0.1.2):** `docs/claude/` was renamed to `.ruckus/`. Path references above reflect the updated structure.

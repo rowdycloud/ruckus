@@ -19,7 +19,7 @@ Explore the codebase to provide the build orchestrator with everything needed to
 
 ## Process
 
-1. **Read project context** — CLAUDE.md and docs/claude/known-pitfalls.md
+1. **Read project context** — CLAUDE.md and .ruckus/known-pitfalls.md
 2. **Understand the feature** — Parse the feature description and identify what needs to be built
 3. **Find relevant code** — Search for existing patterns, utilities, components, and conventions that relate to this feature
 4. **Identify reuse opportunities** — Existing functions, hooks, components, or patterns that the implementation should build on rather than recreate

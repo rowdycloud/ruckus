@@ -25,7 +25,7 @@ Launch all three agents in parallel (single message, multiple tool calls):
 Dispatch the `code-reviewer` agent with:
 - The review scope description
 - List of changed files
-- Instruction to read CLAUDE.md and docs/claude/known-pitfalls.md first
+- Instruction to read CLAUDE.md and .ruckus/known-pitfalls.md first
 
 ### Agent 2: `static-analysis`
 Dispatch the `static-analysis` agent with:
@@ -35,7 +35,7 @@ Dispatch the `static-analysis` agent with:
 ### Agent 3: `silent-failure-hunter`
 Dispatch the `silent-failure-hunter` agent with:
 - List of changed files
-- Instruction to read docs/claude/known-pitfalls.md for domain-specific risk patterns
+- Instruction to read .ruckus/known-pitfalls.md for domain-specific risk patterns
 
 ---
 
@@ -68,7 +68,7 @@ When all agents return, merge findings into a single report grouped by severity:
 
 ## STEP 3: KNOWN PITFALLS UPDATE
 
-Ask: **"Did this review reveal patterns that should be added to `docs/claude/known-pitfalls.md`?"**
+Ask: **"Did this review reveal patterns that should be added to `.ruckus/known-pitfalls.md`?"**
 
 If yes, dispatch the `doc-writer` agent with the new pitfall description.
 

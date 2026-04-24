@@ -19,8 +19,8 @@ Update the project documentation to capture this knowledge for future runs.
 
 ## Files You May Update
 
-- `docs/claude/known-pitfalls.md` — Add new pitfalls discovered during development
-- `docs/claude/CLAUDE.md` — Add new conventions or update existing ones
+- `.ruckus/known-pitfalls.md` — Add new pitfalls discovered during development
+- `CLAUDE.md` — Add new conventions or update existing ones
 - `docs/adr/` — Create ADRs for significant architectural decisions (if directory exists)
 
 ## Process

@@ -23,12 +23,11 @@ Setup detects your project's maturity level (greenfield/scaffolded/established b
 
 | File | Purpose |
 | ---- | ------- |
-| `docs/claude/CLAUDE.md` | Project stack, commands, conventions — read by all agents |
-| `docs/claude/known-pitfalls.md` | Gotchas discovered during development |
-| `docs/claude/.workflow-upgrades` | Tracks maturity checks and plugin version |
+| `CLAUDE.md` | Project stack, commands, conventions — auto-loaded by Claude Code and read by all agents |
+| `.ruckus/known-pitfalls.md` | Gotchas discovered during development |
+| `.ruckus/workflow-upgrades` | Tracks maturity checks and plugin version |
 | `.claudeignore` | Keeps large/irrelevant files out of agent context |
 | `.claude/settings.json` | Claude Code hooks (e.g., auto-format on save) |
-| `CLAUDE.md` *(root copy)* | Auto-loaded by Claude Code — edit `docs/claude/CLAUDE.md` instead |
 
 ### Your first feature
 
@@ -67,7 +66,7 @@ Ruckus pipelines are built on four architectural ideas:
 
 **Mandatory plan review.** Before implementation begins, the plan is sent to a review-plan subagent as a blocking call — the orchestrator waits for it to return. It can't be skipped because it's not a skill invocation; it's a subagent dispatch.
 
-**Shared context files.** All agents read `docs/claude/CLAUDE.md` (project stack, commands, conventions) and `docs/claude/known-pitfalls.md` (gotchas discovered during development). These are the shared context that makes agents project-aware without bloating individual prompts.
+**Shared context files.** All agents read `CLAUDE.md` (project stack, commands, conventions) and `.ruckus/known-pitfalls.md` (gotchas discovered during development). These are the shared context that makes agents project-aware without bloating individual prompts.
 
 ## Understanding Gates
 
@@ -221,7 +220,7 @@ Check IDs are versioned. When a plugin update improves a check, the version bump
 
 **Responses:** `yes` (apply) / `not yet` (ask again next run) / `never` (don't ask again for this version)
 
-Upgrade state is stored in `docs/claude/.workflow-upgrades`. To reset a "never" decision, remove the corresponding `[check-id]-declined` line from that file.
+Upgrade state is stored in `.ruckus/workflow-upgrades`. To reset a "never" decision, remove the corresponding `[check-id]-declined` line from that file.
 
 ## Token Usage
 
@@ -264,7 +263,7 @@ Ruckus automatically compacts context after Stages 4, 5, and 6 to reduce overflo
 
 **Symptom:** Pipeline warns about missing context at the start of implementation (Stage 5).
 **Cause:** `/ruckus:setup` wasn't run, or was run with incomplete answers.
-**Fix:** Run `/ruckus:setup`. If setup was already run, check `docs/claude/CLAUDE.md` for placeholder values that weren't replaced.
+**Fix:** Run `/ruckus:setup`. If setup was already run, check `CLAUDE.md` for placeholder values that weren't replaced.
 
 ### Plan review seems stuck or loops
 

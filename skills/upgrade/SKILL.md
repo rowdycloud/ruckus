@@ -13,10 +13,14 @@ Compare installed Ruckus files against the latest plugin templates. Apply struct
 
 ## STEP 1: INVENTORY
 
-**Version check:** Read `docs/claude/.workflow-upgrades` and extract the `ruckus-version` line. Read `.claude-plugin/plugin.json` for the current plugin version. If they differ:
+**Migration check:** If `docs/claude/` directory exists in the project:
+> "Ruckus v0.1.2 renamed `docs/claude/` to `.ruckus/`. Migrate existing files? (yes / skip)"
+If yes: create `.ruckus/` directory if it doesn't exist. Move (preserving content) `docs/claude/known-pitfalls.md` to `.ruckus/known-pitfalls.md`, move `docs/claude/.workflow-upgrades` to `.ruckus/workflow-upgrades`. If `docs/claude/CLAUDE.md` exists and differs from root `CLAUDE.md`, show the diff and ask the user which to keep; if identical or only root exists, delete `docs/claude/CLAUDE.md`. Remove `docs/claude/` only if empty after moves. If any source file doesn't exist, skip that move and note it in the migration summary. Then update root `CLAUDE.md`: replace any remaining `docs/claude/known-pitfalls.md` with `.ruckus/known-pitfalls.md` and `docs/claude/.workflow-upgrades` with `.ruckus/workflow-upgrades`.
+
+**Version check:** Read `.ruckus/workflow-upgrades` and extract the `ruckus-version` line. Read `.claude-plugin/plugin.json` for the current plugin version. If they differ:
 > "Plugin version changed: [installed] → [current]. Structural diffs below may include changes from the version bump, not just your edits."
 
-If `docs/claude/.workflow-upgrades` is missing or has no version line, warn:
+If `.ruckus/workflow-upgrades` is missing or has no version line, warn:
 > "No installed version recorded. Run `/ruckus:setup` to initialize, or proceeding will compare against current plugin templates."
 
 After displaying the version status, enumerate all template files in the plugin's `skills/setup/templates/` directory dynamically. For each template, determine its installed counterpart:
@@ -24,12 +28,12 @@ After displaying the version status, enumerate all template files in the plugin'
 **Known mappings:**
 | Template | Installs to |
 |----------|-------------|
-| `CLAUDE.md.template` | `docs/claude/CLAUDE.md` |
-| `known-pitfalls.md.template` | `docs/claude/known-pitfalls.md` |
+| `CLAUDE.md.template` | `CLAUDE.md` |
+| `known-pitfalls.md.template` | `.ruckus/known-pitfalls.md` |
 | `claudeignore.template` | `.claudeignore` |
 | `settings.json.template` | `.claude/settings.json` |
 
-For any new templates not in this table, infer the install path from the filename (strip `.template` suffix, place in `docs/claude/` or `.claude/` as appropriate).
+For any new templates not in this table, infer the install path from the filename (strip `.template` suffix, place in `.ruckus/` or `.claude/` as appropriate).
 
 Also check for agent files in `.claude/agents/` that may need updates against plugin `agents/` directory.
 
@@ -78,7 +82,6 @@ Apply approved updates. For each applied update:
 1. Create a backup: `[file].backup-[date]`
 2. Merge structural changes with preserved customizations
 3. Verify the merged file is valid
-4. If the file is `docs/claude/CLAUDE.md`: also copy the merged result to the project root `CLAUDE.md` (required for Claude Code auto-loading and agent reads)
 
 ---
 
@@ -91,7 +94,7 @@ For files classified as **New**:
 
 ## STEP 6: UPDATE VERSION
 
-Update the `ruckus-version` line in `docs/claude/.workflow-upgrades` to match the current plugin version. Do this regardless of whether the user accepted or declined changes — the version tracks "last reviewed," not "last applied." File-content comparison in STEP 2 will still surface any unmerged diffs on future runs.
+Update the `ruckus-version` line in `.ruckus/workflow-upgrades` to match the current plugin version. Do this regardless of whether the user accepted or declined changes — the version tracks "last reviewed," not "last applied." File-content comparison in STEP 2 will still surface any unmerged diffs on future runs.
 ```
 ruckus-version [current version from plugin.json] [today's date]
 ```

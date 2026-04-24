@@ -30,4 +30,4 @@
 ## Documentation
 
 - ADRs: {{ADR_LOCATION}}
-- Known pitfalls: docs/claude/known-pitfalls.md
+- Known pitfalls: .ruckus/known-pitfalls.md

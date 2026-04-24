@@ -28,7 +28,7 @@ Also detect:
 - Test framework (jest, vitest, pytest, go test, etc.)
 - Formatter (prettier, black, gofmt, etc.)
 - CI configuration (.github/workflows, .gitlab-ci, etc.)
-- Existing .claude/ or docs/claude/ directory
+- Existing .claude/ or .ruckus/ directory
 
 Display: "Project maturity: [level] ([N] source files). Detected: [test framework], [formatter], [CI]."
 
@@ -36,7 +36,7 @@ Display: "Project maturity: [level] ([N] source files). Detected: [test framewor
 
 ## STEP 2: CHECK EXISTING STATE
 
-If `docs/claude/CLAUDE.md` or `.claude/` already exists:
+If `.ruckus/` or `.claude/` already exists:
 > "Existing Ruckus/Claude configuration detected. Options: (enrich) add missing fields / (replace) fresh setup / (abort)"
 
 If enriching, read existing files and identify gaps to fill.
@@ -78,7 +78,7 @@ Prompt but don't block on:
 
 ## STEP 5: CREATE FILES
 
-Create `docs/claude/` directory if it doesn't exist.
+Create `.ruckus/` directory if it doesn't exist.
 
 ### 5a. CLAUDE.md
 Read `skills/setup/templates/CLAUDE.md.template`. Derive `{{PROJECT_NAME}}` from the repo directory name (or package.json `name` field if available). Replace all `{{PLACEHOLDER}}` markers with collected values:
@@ -90,12 +90,12 @@ Read `skills/setup/templates/CLAUDE.md.template`. Derive `{{PROJECT_NAME}}` from
 - `{{CONVENTIONS}}` — from Step 3 question 5
 - `{{ARCHITECTURE_NOTES}}`, `{{CROSS_BOUNDARY_NOTES}}`, `{{ADR_LOCATION}}` — from Step 4 (if not provided, write "None documented yet")
 
-Write to `docs/claude/CLAUDE.md`.
+Write to root `CLAUDE.md`.
 
-Also create a **copy** (not a symlink) at the project root `CLAUDE.md` if no root CLAUDE.md exists. The root copy is required because Claude Code auto-loads it and all Ruckus agents reference it by name. Edits should happen to `docs/claude/CLAUDE.md` — the root copy is refreshed by `/ruckus:upgrade`.
+`CLAUDE.md` is the canonical project context file, read by all Ruckus agents.
 
 ### 5b. known-pitfalls.md
-Read `skills/setup/templates/known-pitfalls.md.template`. Replace `{{PROJECT_NAME}}` with the project name and `{{DOMAIN_DESCRIPTION}}` with the domain description from Step 3. Write to `docs/claude/known-pitfalls.md`.
+Read `skills/setup/templates/known-pitfalls.md.template`. Replace `{{PROJECT_NAME}}` with the project name and `{{DOMAIN_DESCRIPTION}}` with the domain description from Step 3. Write to `.ruckus/known-pitfalls.md`.
 
 ### 5c. .claudeignore
 Read `skills/setup/templates/claudeignore.template`. Write to `.claudeignore` (project root).
@@ -114,10 +114,10 @@ If no formatter was provided and `.claude/settings.json` does **not** already ex
 
 If `.claude/settings.json` already exists, leave it unchanged — it may contain hooks from another plugin or a prior setup run.
 
-### 5e. .workflow-upgrades
+### 5e. workflow-upgrades
 Read the current plugin version from `.claude-plugin/plugin.json` (the `version` field).
 
-If `docs/claude/.workflow-upgrades` does **not** exist: create it with the version line:
+If `.ruckus/workflow-upgrades` does **not** exist: create it with the version line:
 ```
 ruckus-version [version from plugin.json] [today's date YYYY-MM-DD]
 ```
@@ -140,7 +140,7 @@ Based on detected maturity:
 
 **Established:**
 > "Project is established ([N] files). Enable the investigator agent for `/ruckus:fix`? It traces code paths to diagnose bugs. (yes / not yet)"
-If yes: record `investigator-v1-added YYYY-MM-DD` in `docs/claude/.workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
+If yes: record `investigator-v1-added YYYY-MM-DD` in `.ruckus/workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
 ---
 
@@ -152,9 +152,9 @@ Display what was created:
 
 **Maturity:** [level] ([N] files)
 **Created:**
-- docs/claude/CLAUDE.md — project context for all skills
-- docs/claude/known-pitfalls.md — grows as you work
-- docs/claude/.workflow-upgrades — tracks plugin version and maturity decisions
+- CLAUDE.md — project context for all skills
+- .ruckus/known-pitfalls.md — grows as you work
+- .ruckus/workflow-upgrades — tracks plugin version and maturity decisions
 - .claudeignore — keeps context lean
 - .claude/settings.json — [formatter hook configured / empty hooks structure]
 

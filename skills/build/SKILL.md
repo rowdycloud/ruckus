@@ -139,7 +139,7 @@ You are implementing a single task for {{PROJECT_NAME}}.
 
 ## Context
 
-Read CLAUDE.md and docs/claude/known-pitfalls.md before implementing.
+Read CLAUDE.md and .ruckus/known-pitfalls.md before implementing.
 
 ## UI Task (include ONLY when plan task has UI: yes — omit entirely for UI: no)
 
@@ -223,13 +223,13 @@ Invoke `/ruckus:verify-all` (or the project's verify-all command). Fix failures 
    ```
 3. Show commit for approval. Commit but do NOT push.
 4. Run maturity checks (see below).
-5. Ask: "Did this work reveal any new pitfalls or conventions for `docs/claude/known-pitfalls.md`?" If yes, dispatch `doc-writer` agent.
+5. Ask: "Did this work reveal any new pitfalls or conventions for `.ruckus/known-pitfalls.md`?" If yes, dispatch `doc-writer` agent.
 
 ---
 
 ## MATURITY CHECKS (run at wrap-up)
 
-Read `docs/claude/.workflow-upgrades` (create if missing).
+Read `.ruckus/workflow-upgrades` (create if missing).
 
 Check IDs are versioned (e.g., `investigator-v1`). When the plugin updates a check, the version bumps and previously-declined checks are re-offered with an explanation of what changed.
 
@@ -246,12 +246,12 @@ Read CLAUDE.md. If it's missing build command, type check command, or stack summ
 Continue with whatever the human provides — not a hard block, but a visible gap.
 
 **Check: investigator-v1:**
-If no `investigator-v1-added` in `docs/claude/.workflow-upgrades` AND source file count > 50 AND not declined:
+If no `investigator-v1-added` in `.ruckus/workflow-upgrades` AND source file count > 50 AND not declined:
 > "This project has [N] source files but the investigator agent isn't enabled. It improves bug diagnosis for `/ruckus:fix`. Enable it? (yes / not yet / never)"
-If yes: record `investigator-v1-added YYYY-MM-DD` in `docs/claude/.workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
+If yes: record `investigator-v1-added YYYY-MM-DD` in `.ruckus/workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
 **Check: pitfalls-organized-v1:**
-If `docs/claude/known-pitfalls.md` > 80 lines AND no `pitfalls-organized-v1` within last 30 days:
+If `.ruckus/known-pitfalls.md` > 80 lines AND no `pitfalls-organized-v1` within last 30 days:
 > "known-pitfalls.md has grown to [N] lines. Deduplicate and organize?"
 
 **Check: test-verify-v1:**

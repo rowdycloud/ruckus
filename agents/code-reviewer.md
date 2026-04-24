@@ -15,7 +15,7 @@ Given a set of changed files, review them for bugs, logic errors, security vulne
 
 ## Process
 
-1. **Read project context** — CLAUDE.md and docs/claude/known-pitfalls.md
+1. **Read project context** — CLAUDE.md and .ruckus/known-pitfalls.md
 2. **Read changed files** — Understand what was modified and why
 3. **Check git context** — Use `git log`/`git blame` to understand change intent and history
 4. **Check correctness** — Logic errors, off-by-one, null handling, race conditions

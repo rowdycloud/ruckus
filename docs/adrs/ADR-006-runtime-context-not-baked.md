@@ -14,11 +14,11 @@ The predecessor workflow kit baked project-specific values into each command fil
 
 ## Decision
 
-Skills read project context from `CLAUDE.md` and `docs/claude/known-pitfalls.md` at runtime. Skills contain instructions like "read CLAUDE.md for the project's build command" rather than hardcoded `npx tsc --noEmit`. The only project-specific file the plugin's setup creates is CLAUDE.md itself (and known-pitfalls.md, .claudeignore, settings.json).
+Skills read project context from `CLAUDE.md` and `.ruckus/known-pitfalls.md` at runtime. Skills contain instructions like "read CLAUDE.md for the project's build command" rather than hardcoded `npx tsc --noEmit`. The only project-specific file the plugin's setup creates is CLAUDE.md itself (and known-pitfalls.md, .claudeignore, settings.json).
 
 ## Reasoning
 
-When CLAUDE.md is the single source of truth for project context, updating a build command is a one-place change. (Setup creates the canonical file at `docs/claude/CLAUDE.md` and copies it to the project root where Claude Code auto-loads it; agents read the root copy.) All skills pick up the new value on their next invocation. Plugin updates (via `/plugin update`) deliver new skill logic without requiring setup to re-run — the skills read the same CLAUDE.md they always did.
+When CLAUDE.md is the single source of truth for project context, updating a build command is a one-place change. (Setup writes directly to `CLAUDE.md` at the project root where Claude Code auto-loads it; there is no secondary copy.) All skills pick up the new value on their next invocation. Plugin updates (via `/plugin update`) deliver new skill logic without requiring setup to re-run — the skills read the same CLAUDE.md they always did.
 
 This also means CLAUDE.md quality directly determines plugin quality. A weak CLAUDE.md (just "React app") produces weak results from every skill. This is an intentional trade-off: the quality bottleneck is concentrated in one file that setup enforces and that users can iteratively improve, rather than scattered across a dozen skill files that users can't easily inspect.
 
@@ -43,3 +43,5 @@ This also means CLAUDE.md quality directly determines plugin quality. A weak CLA
 
 ### Neutral
 - The `agent-preamble.md` file provides a canonical reference for agents to read CLAUDE.md and known-pitfalls.md, reducing duplication of the reading instruction across agent prompts
+
+> **Note (v0.1.2):** `docs/claude/` was renamed to `.ruckus/`. Path references above reflect the updated structure.

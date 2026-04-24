@@ -15,6 +15,7 @@ This is a plugin, not a standalone app. It runs inside Claude Code sessions in t
 | `skills/build/implementer-prompt.md` | Reference copy of implementation subagent prompt (runtime copy is inlined in build/fix SKILL.md) |
 | `skills/build/spec-reviewer-prompt.md` | Reference copy of spec compliance checklist (runtime copy is inlined in build/fix SKILL.md) |
 | `docs/adrs/` | Architecture Decision Records (ADR-001 through ADR-008) |
+| `.ruckus/` | Runtime files installed per-project: `known-pitfalls.md` and `workflow-upgrades` |
 | `.claude-plugin/plugin.json` | Plugin manifest |
 
 **agent-preamble.md** is a sync reference, not an auto-include. Claude Code plugins have no include mechanism. Each agent inlines the preamble text in its Process step 1. When updating, manually sync to all agents listed in the file header. See ADR-003 for the shared-reference pattern.

@@ -31,7 +31,7 @@ If the file is missing critical sections, note the gaps but proceed with review.
 
 Dispatch the `epic-reviewer` agent (model: `opus`) with:
 - The full epic file content
-- Instruction to read CLAUDE.md and docs/claude/known-pitfalls.md for project context
+- Instruction to read CLAUDE.md and .ruckus/known-pitfalls.md for project context
 - The review dimensions below
 
 **Review dimensions:**
