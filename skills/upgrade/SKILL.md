@@ -14,7 +14,8 @@ Compare installed Ruckus files against the latest plugin templates. Apply struct
 ## STEP 1: INVENTORY
 
 **Migration check:** If `docs/claude/` directory exists in the project:
-> "Ruckus v0.1.2 renamed `docs/claude/` to `.ruckus/`. Migrate existing files? (yes / skip)"
+> "Ruckus v0.1.2 renamed `docs/claude/` to `.ruckus/`. Migrate existing files? (yes / abort)"
+If abort: stop the upgrade. Display: "Migration is required before upgrading — all v0.1.2+ paths use `.ruckus/`. Re-run `/ruckus:upgrade` when ready to migrate."
 If yes: create `.ruckus/` directory if it doesn't exist. Move (preserving content) `docs/claude/known-pitfalls.md` to `.ruckus/known-pitfalls.md`, move `docs/claude/.workflow-upgrades` to `.ruckus/workflow-upgrades`. If `docs/claude/CLAUDE.md` exists but root `CLAUDE.md` does not, move it to root `CLAUDE.md`. If both exist and differ, show the diff and ask the user which to keep. If both exist and are identical, or only root exists, delete `docs/claude/CLAUDE.md`. Remove `docs/claude/` only if empty after moves. If any source file doesn't exist, skip that move and note it in the migration summary. Then update root `CLAUDE.md`: replace any remaining `docs/claude/known-pitfalls.md` with `.ruckus/known-pitfalls.md` and `docs/claude/.workflow-upgrades` with `.ruckus/workflow-upgrades`.
 
 **Version check:** Read `.ruckus/workflow-upgrades` and extract the `ruckus-version` line. Read `.claude-plugin/plugin.json` for the current plugin version. If they differ:
