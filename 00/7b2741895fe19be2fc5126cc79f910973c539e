@@ -1,0 +1,27 @@
+docs/plans/e01-s2-pipeline-loop-caps-plan.md
+  477494551c213bfe 1-137
+skills/fix/SKILL.md
+  477494551c213bfe 109,177,199,201
+skills/build/SKILL.md
+  477494551c213bfe 100,168,194,196
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "007b2741895fe19be2fc5126cc79f910973c539e",
+  "prompts": {
+    "477494551c213bfe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4acb4397-af6b-463f-b692-e1e2c7695226",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 145,
+      "total_deletions": 8,
+      "accepted_lines": 145,
+      "overriden_lines": 0
+    }
+  }
+}
