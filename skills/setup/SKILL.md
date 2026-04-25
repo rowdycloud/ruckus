@@ -39,7 +39,7 @@ Display: "Project maturity: [level] ([N] source files). Detected: [test framewor
 If `docs/claude/` exists:
 > "Legacy Ruckus installation detected at `docs/claude/`. Run `/ruckus:upgrade` to migrate to `.ruckus/` first, then re-run `/ruckus:setup` if needed. (proceed anyway / abort)"
 
-If `.ruckus/` or `.claude/` already exists:
+Else if `.ruckus/` or `.claude/` already exists:
 > "Existing Ruckus/Claude configuration detected. Options: (enrich) add missing fields / (replace) fresh setup / (abort)"
 
 If enriching, read existing files and identify gaps to fill.

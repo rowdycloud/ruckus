@@ -28,7 +28,7 @@
 
 ### T1: Rename paths in 6 preamble-consuming agents (~3 min)
 **Files:** `agents/agent-preamble.md`, `agents/code-reviewer.md`, `agents/discovery.md`, `agents/epic-reviewer.md`, `agents/investigator.md`, `agents/silent-failure-hunter.md`
-**Action:** Replace `docs/claude/known-pitfalls.md` with `.ruckus/known-pitfalls.md` in all 7 files (preamble reference + 6 agent inlines)
+**Action:** Replace `docs/claude/known-pitfalls.md` with `.ruckus/known-pitfalls.md` in all 6 files (preamble reference + 5 agent inlines)
 **Details:**
 - `agent-preamble.md` line 14: `docs/claude/known-pitfalls.md` → `.ruckus/known-pitfalls.md`
 - `code-reviewer.md` line 18: `docs/claude/known-pitfalls.md` → `.ruckus/known-pitfalls.md`
