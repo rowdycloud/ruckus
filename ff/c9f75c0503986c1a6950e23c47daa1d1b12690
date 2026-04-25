@@ -1,0 +1,25 @@
+CHANGELOG.md
+  83e102af21ef0f70 23-31
+docs/planning/epics/E01-directory-rename-pipeline-hardening.md
+  83e102af21ef0f70 208,210,258-261,265,267,323-328
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ffc9f75c0503986c1a6950e23c47daa1d1b12690",
+  "prompts": {
+    "83e102af21ef0f70": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a75121c0-11c8-4485-9ea5-901043175384",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 23,
+      "total_deletions": 12,
+      "accepted_lines": 23,
+      "overriden_lines": 0
+    }
+  }
+}
