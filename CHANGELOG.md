@@ -13,6 +13,14 @@
 - Update all agent preambles and skill references to use `.ruckus/` paths (E01.S1)
 - ADR-005 and ADR-006 updated with footnotes noting the directory rename (E01.S1)
 
+### Fixed
+
+- Cap four unbounded pipeline loops in build and fix skills (E01.S2):
+  - Stage 4 review-plan retry: "2 consecutive" → "2 total" to prevent bypass via alternating results
+  - Stage 5c question re-dispatch: add max-2 cap with human escalation
+  - Stage 6 review-fix loop: add max-2-cycle cap with human escalation
+  - Stage 6 gate: disambiguate "address warnings" with explicit action and one-re-review limit
+
 ### Added
 
 - Upgrade migration step: detects `docs/claude/` in existing projects and offers to move files to `.ruckus/` (E01.S1)

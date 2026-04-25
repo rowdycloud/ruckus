@@ -97,7 +97,7 @@ Dispatch `/ruckus:review-plan` as a blocking subagent call. Use model `sonnet`. 
 
 The subagent verifies completeness, assumptions, and overengineering against the actual codebase. It returns a structured PASS / NEEDS REVISION verdict.
 
-**If NEEDS REVISION:** apply the suggested edits to the plan file, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 consecutive NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
+**If NEEDS REVISION:** apply the suggested edits to the plan file, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 total NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
 
 **After review completes:** NOW present the plan and review results to the human. Display the plan summary, task count, and the review verdict (PASS or outstanding concerns).
 
@@ -165,7 +165,7 @@ Run the spec compliance checklist:
 - Did the subagent modify only the files listed in the task?
 - Did the verification command pass?
 - Does the implementation match the task description?
-- If the subagent returned questions: answer them, re-dispatch.
+- If the subagent returned questions: answer them, re-dispatch (max 2; then escalate to human).
 
 **Stage 2 — Quick quality check (orchestrator performs inline):**
 - Run the project's type check / lint command
@@ -191,9 +191,9 @@ Compact context before review. Preserve: feature summary, list of all files chan
 
 Invoke `/ruckus:review` (or the project's review command) with a description of what was built. This dispatches code-reviewer, static-analysis, and silent-failure-hunter in parallel.
 
-Fix any critical findings. Re-run review until clean.
+Fix critical findings and re-run review (max 2 review-fix cycles; if still failing, present findings to human).
 
-**Gate:** "Review complete. Proceed to verification? (yes / address warnings / abort)"
+**Gate:** "Review complete. Proceed to verification? (yes / list warnings to address [then re-review once] / abort)"
 
 Compact context before verification. Preserve: feature summary, files changed, review verdict, any deferred warnings.
 

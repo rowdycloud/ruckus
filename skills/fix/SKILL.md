@@ -106,7 +106,7 @@ Do NOT present the plan to the human yet — proceed directly to Stage 4.
 
 Dispatch `/ruckus:review-plan` as a blocking subagent call. Use model `sonnet`. Pass the plan file path from Stage 3 as the input.
 
-**If NEEDS REVISION:** apply the suggested edits to the plan file, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 consecutive NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
+**If NEEDS REVISION:** apply the suggested edits to the plan file, then re-dispatch the review-plan subagent against the updated plan. Repeat until PASS or until 2 total NEEDS REVISION verdicts — at that point, present findings to the human and let them decide.
 
 **After review completes:** NOW present the plan and review results to the human. Display the plan summary, task count, root cause, and the review verdict (PASS or outstanding concerns).
 
@@ -174,7 +174,7 @@ Run the spec compliance checklist:
 - Did the subagent modify only the files listed in the task?
 - Did the verification command pass?
 - Does the implementation match the task description?
-- If the subagent returned questions: answer them, re-dispatch.
+- If the subagent returned questions: answer them, re-dispatch (max 2; then escalate to human).
 
 **Stage 2 — Quick quality check (orchestrator performs inline):**
 - Run the project's type check / lint command
@@ -196,9 +196,9 @@ Compact context before review. Preserve: issue summary, list of all files change
 
 **MANDATORY — this stage cannot be skipped.**
 
-Invoke `/ruckus:review` with a description of the fix. Fix any critical findings. Re-run until clean.
+Invoke `/ruckus:review` with a description of the fix. Fix critical findings and re-run (max 2 review-fix cycles; if still failing, present findings to human).
 
-**Gate:** "Review complete. Proceed to verification? (yes / address warnings / abort)"
+**Gate:** "Review complete. Proceed to verification? (yes / list warnings to address [then re-review once] / abort)"
 
 Compact context before verification. Preserve: issue summary, files changed, review verdict, any deferred warnings.
 
