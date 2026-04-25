@@ -113,6 +113,8 @@ Compact context before implementation. Preserve: feature summary, plan file path
 
 **Prerequisite:** Stage 4 must have completed and been approved.
 
+Re-read the plan file. If the path is no longer in context after Stage 4 compaction, check `docs/plans/` for the most recent plan file matching the feature name.
+
 ### 5a. Create task tracking
 
 Read the verified plan. Create a TodoWrite entry for each task. Note task dependencies — do not dispatch a task until its dependencies are marked complete.
@@ -181,7 +183,7 @@ After all tasks are complete:
 
 **Gate:** "Implementation complete. [N] tasks executed, all passing. Summary: [task list with status]. Proceed to review? (yes / adjust / abort)"
 
-Compact context before review. Preserve: feature summary, list of all files changed, task completion count, any verification warnings or deviations.
+Compact context before review. Preserve: feature summary, task ID list, list of all files changed, task completion count, any verification warnings or deviations.
 
 ---
 
@@ -206,6 +208,8 @@ Compact context before verification. Preserve: feature summary, files changed, r
 Invoke `/ruckus:verify-all` (or the project's verify-all command). Fix failures and re-run until clean.
 
 **Gate:** "Verification passed. Ready to commit? (yes / additional checks / abort)"
+
+Compact context before wrap-up. Preserve: feature summary, files changed, task completion count, verification verdict.
 
 ---
 
