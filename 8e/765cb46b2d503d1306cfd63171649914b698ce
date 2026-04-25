@@ -1,0 +1,25 @@
+docs/planning/epics/E01-directory-rename-pipeline-hardening.md
+  477494551c213bfe 129,131,201-204
+CHANGELOG.md
+  477494551c213bfe 16-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "8e765cb46b2d503d1306cfd63171649914b698ce",
+  "prompts": {
+    "477494551c213bfe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4acb4397-af6b-463f-b692-e1e2c7695226",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 14,
+      "total_deletions": 5,
+      "accepted_lines": 14,
+      "overriden_lines": 0
+    }
+  }
+}
