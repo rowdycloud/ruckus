@@ -1,0 +1,23 @@
+skills/upgrade/SKILL.md
+  21f7900a22bb7897 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "6fc3a50cca773a3af79361ce2b35d791f48aacd0",
+  "prompts": {
+    "21f7900a22bb7897": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3783622-5874-42a9-9e38-0a6e350630d6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 2,
+      "total_deletions": 1,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    }
+  }
+}
