@@ -1,0 +1,27 @@
+skills/setup/SKILL.md
+  21f7900a22bb7897 42
+skills/upgrade/SKILL.md
+  21f7900a22bb7897 18
+docs/plans/e01-s1-directory-rename-plan.md
+  21f7900a22bb7897 31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "bb3aa640fb41229d672796816f617fe8d7da4126",
+  "prompts": {
+    "21f7900a22bb7897": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c3783622-5874-42a9-9e38-0a6e350630d6",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 3,
+      "total_deletions": 3,
+      "accepted_lines": 3,
+      "overriden_lines": 0
+    }
+  }
+}
