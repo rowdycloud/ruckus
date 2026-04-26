@@ -17,6 +17,7 @@ You are implementing a single task for {{PROJECT_NAME}}.
 
 ## Context
 
+<!-- Abbreviated agent-preamble. Source of truth: agents/agent-preamble.md -->
 Read CLAUDE.md and .ruckus/known-pitfalls.md before implementing.
 
 {{#IF_UI_TASK}}

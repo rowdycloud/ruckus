@@ -38,6 +38,8 @@ For any new templates not in this table, infer the install path from the filenam
 
 Also check for agent files in `.claude/agents/` that may need updates against plugin `agents/` directory.
 
+**Preamble drift check:** For each installed agent in `.claude/agents/`, verify its context-loading step references both `CLAUDE.md` and `.ruckus/known-pitfalls.md` consistent with `agents/agent-preamble.md`. Flag any agent where either file reference is missing or uses a stale path (excluding exceptions: static-analysis, doc-writer). Note: inlined copies in `build/SKILL.md` and `fix/SKILL.md` Stage 5b are not checked here — verify those manually when updating the preamble.
+
 ---
 
 ## STEP 2: CLASSIFY CHANGES
