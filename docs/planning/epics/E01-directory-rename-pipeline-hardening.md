@@ -205,8 +205,9 @@ Target behavior:
 
 ---
 
-### S3: Compaction preserve lists and re-validation
+### S3: Compaction preserve lists and re-validation ✅
 
+**Status:** Merged (2026-04-25)
 **Priority:** P1
 
 **Files:**
@@ -254,15 +255,16 @@ Target behavior: Merge compaction into the existing Stage 7 gate line to save a 
 **Line budget:** +2 lines (change 1) + 0 lines (change 2, inline edit) + 1 line (change 3, merged into gate) = **+3 lines per file.** Post-S1+S2+S3: build 290→293, fix 295→298.
 
 **Acceptance Criteria:**
-- [ ] Stage 5 re-validates plan file path after Stage 4 compaction in both build and fix
-- [ ] Stage 5d preserve list includes "task ID list" in both build and fix
-- [ ] Compaction instruction exists between Stage 7 and Stage 8 in both build and fix
-- [ ] Stage 5d preserve list includes "task ID list"; post-Stage 7 compaction preserves feature summary, files changed, and verification verdict
+- [x] Stage 5 re-validates plan file path after Stage 4 compaction in both build and fix
+- [x] Stage 5d preserve list includes "task ID list" in both build and fix
+- [x] Compaction instruction exists between Stage 7 and Stage 8 in both build and fix
+- [x] Stage 5d preserve list includes "task ID list"; post-Stage 7 compaction preserves feature summary, files changed, and verification verdict
 
 ---
 
-### S4: Error handling disambiguation
+### S4: Error handling disambiguation ✅
 
+**Status:** Merged (2026-04-25)
 **Priority:** P1
 
 **Files:**
@@ -318,12 +320,12 @@ Note: The `.ruckus/` path above assumes S1 is complete. This story MUST execute 
 **Line budget:** Change 1 is an inline expansion (+1 line). Change 2 adds ~2 lines to review-plan (90→92). Post-S1+S2+S3+S4: build 293→294, fix 298→299. **Within 300-line limit with 1 line of headroom on fix.**
 
 **Acceptance Criteria:**
-- [ ] Quality check retry distinguishes auto-fixable (task-owned files) from unfixable (external) in both build and fix
-- [ ] Auto-fix is capped at 2 attempts before escalation
-- [ ] Review-plan returns clear NEEDS REVISION when CLAUDE.md is missing
-- [ ] Review-plan notes missing known-pitfalls.md as informational gap, not a blocker
-- [ ] Spec-reviewer reference verified clean (no dangling file references in active skills)
-- [ ] fix/SKILL.md stays at or under 300 lines after all S1-S4 changes applied
+- [x] Quality check retry distinguishes auto-fixable (task-owned files) from unfixable (external) in both build and fix
+- [x] Auto-fix is capped at 2 attempts before escalation
+- [x] Review-plan returns clear NEEDS REVISION when CLAUDE.md is missing
+- [x] Review-plan notes missing known-pitfalls.md as informational gap, not a blocker
+- [x] Spec-reviewer reference verified clean (no dangling file references in active skills)
+- [x] fix/SKILL.md stays at or under 300 lines after all S1-S4 changes applied
 
 ---
 

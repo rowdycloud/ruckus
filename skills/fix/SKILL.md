@@ -180,11 +180,12 @@ Run the spec compliance checklist:
 
 **Stage 2 — Quick quality check (orchestrator performs inline):**
 - Run the project's type check / lint command
-- If it fails: fix the issue OR re-dispatch the subagent with the error
+- If it fails on files this task owns: attempt auto-fix (max 2 attempts); if still failing, escalate to human.
+- If it fails on files outside this task's scope or on environmental issues (missing dependency, config error): escalate to human immediately.
 
 **If both stages pass:** mark task complete, proceed to next task.
 **If spec compliance fails:** re-dispatch with clarified instructions OR escalate to human.
-**If quality check fails repeatedly (>2 attempts):** escalate to human.
+**If quality check auto-fix fails after 2 attempts:** escalate to human.
 
 ### 5d. Completion
 

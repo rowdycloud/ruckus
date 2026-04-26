@@ -20,6 +20,15 @@
   - Stage 5c question re-dispatch: add max-2 cap with human escalation
   - Stage 6 review-fix loop: add max-2-cycle cap with human escalation
   - Stage 6 gate: disambiguate "address warnings" with explicit action and one-re-review limit
+- Add compaction-resilience to build and fix pipelines (E01.S3):
+  - Stage 5 re-validates plan file path after context compaction
+  - Stage 5d preserve list includes task ID list
+  - Post-Stage 7 compaction boundary preserves feature summary, files changed, and verification verdict
+- Disambiguate error handling in pipeline quality checks and review-plan (E01.S4):
+  - Stage 5c quality check: split "fix OR re-dispatch" into task-owned auto-fix (max 2) vs external escalation
+  - Summary line updated from ">2 attempts" to "after 2 auto-fix attempts" for consistency
+  - review-plan: add `.ruckus/` prefix to known-pitfalls.md path reference
+  - review-plan: return NEEDS REVISION when CLAUDE.md missing, note gap when known-pitfalls.md missing
 
 ### Added
 

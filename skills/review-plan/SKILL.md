@@ -14,9 +14,9 @@ You do NOT modify any source files. You read, investigate, and report.
 
 You receive:
 - A path to the plan file
-- The project's CLAUDE.md and known-pitfalls.md
+- The project's CLAUDE.md and .ruckus/known-pitfalls.md
 
-Read all three before starting verification.
+Read all three before starting verification. If CLAUDE.md is missing, return NEEDS REVISION with verdict: "CLAUDE.md not found — run /ruckus:setup first." If .ruckus/known-pitfalls.md is missing, note the gap in your report but proceed — it is informational, not blocking.
 
 ## Verification Process
 
@@ -86,5 +86,5 @@ Run up to 3 iterations. Each iteration generates questions, investigates, and up
 - Be specific. "The approach might not work" is not a finding. "Task T3 imports from `src/utils/format.ts` but that file doesn't exist — `src/lib/formatters.ts` has the equivalent function" is a finding.
 - Cite files. Every ⚠️ and ❌ must reference at least one file path as evidence.
 - Don't invent problems. If the plan is sound, say PASS. A clean verification is valuable signal.
-- Check known-pitfalls.md. If the plan's approach matches a known pitfall pattern, flag it as ⚠️.
+- Check .ruckus/known-pitfalls.md. If the plan's approach matches a known pitfall pattern, flag it as ⚠️.
 - Focus on what matters for implementation success, not stylistic preferences.
