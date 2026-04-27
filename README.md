@@ -116,6 +116,8 @@ You can abort at any gate, but you can't skip one. Gates are the mechanism that 
 | `setup` | Project bootstrap with maturity detection | First time using Ruckus in a project |
 | `upgrade` | Update installed files from latest templates | After plugin updates, or to refresh CLAUDE.md |
 
+> **review vs review-plan:** `review-plan` verifies the implementation plan against the codebase *before* implementation starts (dispatched as a blocking subagent by build/fix Stage 4). `review` evaluates the implemented code *after* implementation completes (Stage 6 in build/fix pipelines, or standalone).
+
 ## Pipeline: `/ruckus:build`
 
 The build pipeline drives feature implementation through 8 gated stages:
@@ -143,7 +145,7 @@ Intake → Investigate → Plan → Review Plan → Implement → Review → Ver
 - Stage 2 dispatches the investigator agent (or performs inline if agent doesn't exist)
 - Compacts context before investigation and after Stages 4, 5, 6
 - Commit messages use `fix:` prefix with issue ID reference
-- Self-upgrades: offers to create investigator agent when project reaches 50+ files
+- Offers to create investigator agent when project reaches 50+ files
 
 ## Agents
 
@@ -229,8 +231,8 @@ Approximate token consumption per skill invocation. Actual usage varies with pro
 | Skill | Approximate Tokens | Notes |
 | ----- | ------------------ | ----- |
 | `setup` | 5K-10K | One-time; mostly human Q&A |
-| `build` | 40K-80K | Scales with task count (~8-12K per task) |
-| `fix` | 30K-60K | Usually fewer tasks than build |
+| `build` | 40K-80K | Scales with task count (~8-12K per task). Includes 3 compaction points that reduce peak context. |
+| `fix` | 30K-60K | Usually fewer tasks than build. Includes 3 compaction points that reduce peak context. |
 | `review` | 15K-25K | 3 parallel agents reading changed files |
 | `review-epic` | 10K-20K | Single Opus dispatch; scales with epic size |
 | `audit-epic` | 20K-50K | Per-story subagents + synthesis |
