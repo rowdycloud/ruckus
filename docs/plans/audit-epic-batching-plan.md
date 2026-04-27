@@ -74,7 +74,7 @@ After all per-story reviews complete (and context is compacted), perform a cross
 **UI:** no
 
 ## Blast Radius
-- Do NOT modify: any file outside `skills/audit-epic/SKILL.md`
+- Do NOT modify: any file outside `skills/audit-epic/SKILL.md` and `docs/plans/audit-epic-batching-plan.md`
 - Watch for: line count creep (spec targets ~141, cap is 300)
 
 ## Conventions

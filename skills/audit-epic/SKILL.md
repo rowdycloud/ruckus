@@ -57,8 +57,8 @@ Display the mapping for human confirmation.
 
 **If 10 or more stories:** Batch per-story reviews in groups of 5:
 1. Dispatch the first batch (up to 5 stories) in parallel, model: `sonnet`. Each receives the prompt below.
-2. When the batch returns, summarize batch findings: key themes, critical issues (PARTIALLY MET / NOT MET items), affected story IDs.
-3. Compact context. Preserve: epic title, full story ID list, all accumulated AC status rows (verdict per AC per story — no evidence), all batch summaries so far (append, do not replace), remaining story list.
+2. When the batch returns, summarize batch findings: key themes, critical issues (PARTIALLY MET / NOT MET items), affected story IDs, quality concerns, and missing coverage gaps.
+3. Compact context. Preserve: epic title, full story ID list, all accumulated AC status rows (verdict per AC per story — no evidence), all batch summaries so far (append, do not replace), quality flags, missing coverage notes, remaining story list.
 4. If remaining story list is empty, proceed to the convergence point below. Otherwise, dispatch the next batch and repeat from step 2.
 
 Each subagent receives:
