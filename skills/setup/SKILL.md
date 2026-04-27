@@ -42,7 +42,7 @@ If `docs/claude/` exists:
 Else if `.ruckus/` or `.claude/` already exists:
 > "Existing Ruckus/Claude configuration detected. Options: (enrich) add missing fields / (replace) fresh setup / (abort)"
 
-If enriching, read existing files and identify gaps to fill.
+If enriching, read existing files and identify gaps: any of the 6 required fields (Step 3) that are missing, empty, or contain placeholder text ("TBD", "TODO", template markers like `{{...}}`). Exception: for the type-check and test-command fields only, answers like "none", "none yet", or other deliberate opt-outs are valid — do not treat them as gaps. Only prompt for gap fields — preserve all existing non-gap content.
 
 ---
 
@@ -65,6 +65,8 @@ Ask each question. If the human provides "skip" or refuses, explain why it matte
    *e.g., "All API routes must validate input with Zod schemas before processing" or "Repository pattern — data access only through repository classes, never direct DB queries in handlers"*
 6. **Domain:** "In one sentence, what does this project do?"
    *e.g., "Cannabis compliance platform for tracking inventory from seed to sale" or "Real-time multiplayer game server"*
+
+**Gate:** Confirm all 6 required fields have non-empty, non-placeholder values. If any field is missing or contains only "TBD", "TODO", "skip", or similar placeholders, loop back to that specific question. Exception: for type-check and test-command, answers like "none" or "none yet" are valid opt-outs — accept them. Do not proceed to Step 4 until all 6 fields have substantive answers.
 
 ---
 
@@ -92,6 +94,8 @@ Read `skills/setup/templates/CLAUDE.md.template`. Derive `{{PROJECT_NAME}}` from
 - `{{FORMATTER_COMMAND}}` — from Step 4 (if provided, otherwise remove the Format row)
 - `{{CONVENTIONS}}` — from Step 3 question 5
 - `{{ARCHITECTURE_NOTES}}`, `{{CROSS_BOUNDARY_NOTES}}`, `{{ADR_LOCATION}}` — from Step 4 (if not provided, write "None documented yet")
+
+**If no formatter was provided:** Remove the entire `| Format | ... |` row from the Commands table. Do not leave a row with an empty command.
 
 Write to root `CLAUDE.md`.
 

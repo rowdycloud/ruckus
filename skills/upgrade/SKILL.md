@@ -86,6 +86,8 @@ Apply approved updates. For each applied update:
 2. Merge structural changes with preserved customizations
 3. Verify the merged file is valid
 
+**For settings.json:** Preserve all existing user-added hook entries — they may be from other plugins or custom workflows. Only add or update hooks defined in the plugin template. If a previously-installed plugin hook is no longer in the current template, flag it to the user rather than silently removing or preserving it.
+
 ---
 
 ## STEP 5: NEW FILES
