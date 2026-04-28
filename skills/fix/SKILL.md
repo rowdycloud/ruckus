@@ -1,6 +1,6 @@
 ---
 name: fix
-description: "Bug/issue fix pipeline: investigate → plan → review plan → implement (subagent-per-task with two-stage review) → review → verify build. Self-upgrades investigator agent when project reaches 50+ files."
+description: "Bug/issue fix pipeline: investigate → plan → review plan → implement (subagent-per-task with two-stage review) → review → verify build. Offers to create investigator agent when project reaches 50+ files."
 disable-model-invocation: true
 ---
 
