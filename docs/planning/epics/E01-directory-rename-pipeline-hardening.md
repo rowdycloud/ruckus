@@ -329,8 +329,9 @@ Note: The `.ruckus/` path above assumes S1 is complete. This story MUST execute 
 
 ---
 
-### S5: Agent preamble drift documentation and detection
+### S5: Agent preamble drift documentation and detection ✅
 
+**Status:** Merged (2026-04-27)
 **Priority:** P2
 
 **Files:**
@@ -386,15 +387,16 @@ Target behavior: Add after the agent file check (line 34):
 **Line budget:** agent-preamble.md: 14→18 lines. implementer-prompt.md: 36→37 lines. upgrade/SKILL.md: 117→123 lines. All well within limits.
 
 **Acceptance Criteria:**
-- [ ] agent-preamble.md explains WHY static-analysis and doc-writer have different preambles
-- [ ] implementer-prompt.md has a comment noting its relationship to agent-preamble.md
-- [ ] Upgrade STEP 1 checks for preamble drift across agent files
-- [ ] The drift check excludes agents listed as exceptions in the preamble header
+- [x] agent-preamble.md explains WHY static-analysis and doc-writer have different preambles
+- [x] implementer-prompt.md has a comment noting its relationship to agent-preamble.md
+- [x] Upgrade STEP 1 checks for preamble drift across agent files
+- [x] The drift check excludes agents listed as exceptions in the preamble header
 
 ---
 
-### S6: Audit-epic token budget batching
+### S6: Audit-epic token budget batching ✅
 
+**Status:** Merged (2026-04-27)
 **Priority:** P2
 
 **Files:**
@@ -425,15 +427,16 @@ See [audit-epic/SKILL.md](../../skills/audit-epic/SKILL.md) STEP 3 for current d
 **Line budget:** audit-epic/SKILL.md: 129→~141 lines. Well within 300-line limit.
 
 **Acceptance Criteria:**
-- [ ] Epics with 10+ stories batch per-story reviews in groups of 5
-- [ ] Intermediate batch summaries are created with context compaction between batches
-- [ ] Epics with <10 stories dispatch all reviews in parallel (no behavioral change)
-- [ ] Cross-cutting analysis receives batch summaries, not raw per-story reports (for 10+ story epics)
+- [x] Epics with 10+ stories batch per-story reviews in groups of 5
+- [x] Intermediate batch summaries are created with context compaction between batches
+- [x] Epics with <10 stories dispatch all reviews in parallel (no behavioral change)
+- [x] Cross-cutting analysis receives batch summaries, not raw per-story reports (for 10+ story epics)
 
 ---
 
-### S7: Setup and upgrade hardening
+### S7: Setup and upgrade hardening ✅
 
+**Status:** Merged (2026-04-27)
 **Priority:** P2
 
 **Files:**
@@ -489,16 +492,17 @@ Target behavior: Add to the Step 4 instructions:
 **Line budget:** setup/SKILL.md: 165→~172 lines. upgrade/SKILL.md (after S5): 123→~127 lines. Both well within limits.
 
 **Acceptance Criteria:**
-- [ ] Setup has explicit gate preventing Step 4 until all 6 required fields have substantive answers
-- [ ] Enrich mode defines "gap" as missing/empty/placeholder required fields
-- [ ] Setup explicitly removes Format row when no formatter is provided
-- [ ] Upgrade preserves user-added hooks when merging settings.json
-- [ ] No existing behavior changes for users who provide all required fields
+- [x] Setup has explicit gate preventing Step 4 until all 6 required fields have substantive answers
+- [x] Enrich mode defines "gap" as missing/empty/placeholder required fields
+- [x] Setup explicitly removes Format row when no formatter is provided
+- [x] Upgrade preserves user-added hooks when merging settings.json
+- [x] No existing behavior changes for users who provide all required fields
 
 ---
 
-### S8: Documentation accuracy
+### S8: Documentation accuracy ✅
 
+**Status:** Merged (2026-04-27)
 **Priority:** P2 (documentation only — no validation required)
 
 **Files:**
@@ -558,12 +562,12 @@ Current behavior: "maturity" is used in Quick Start without definition.
 Target behavior: On first use, add parenthetical: "maturity level (greenfield, scaffolded, or established — based on source file count)"
 
 **Acceptance Criteria:**
-- [ ] Token usage table notes compaction savings for build and fix
-- [ ] Review vs review-plan relationship is explained near the Skills Reference
-- [ ] Troubleshooting section has context management guidance for large builds
-- [ ] fix/SKILL.md description says "Offers to create" not "Self-upgrades"
-- [ ] Quick Start file list uses `.ruckus/` paths (verified by S1)
-- [ ] "maturity" has inline definition on first use in Quick Start
+- [x] Token usage table notes compaction savings for build and fix
+- [x] Review vs review-plan relationship is explained near the Skills Reference
+- [x] Troubleshooting section has context management guidance for large builds
+- [x] fix/SKILL.md description says "Offers to create" not "Self-upgrades"
+- [x] Quick Start file list uses `.ruckus/` paths (verified by S1)
+- [x] "maturity" has inline definition on first use in Quick Start
 
 ---
 

@@ -36,7 +36,7 @@ After displaying the version status, enumerate all template files in the plugin'
 
 For any new templates not in this table, infer the install path from the filename (strip `.template` suffix, place in `.ruckus/` or `.claude/` as appropriate).
 
-Also check for agent files in `.claude/agents/` that may need updates against plugin `agents/` directory.
+**Agent files are plugin-shipped** — they are loaded via `subagent_type` (e.g., `ruckus:code-reviewer`) directly from the plugin cache. Do NOT inventory plugin `agents/` for installation to `.claude/agents/` — never classify agent files as "New" in STEP 2 and never offer to create them in STEP 5.
 
 **Preamble drift check:** For each installed agent in `.claude/agents/`, verify its context-loading step references both `CLAUDE.md` and `.ruckus/known-pitfalls.md` consistent with `agents/agent-preamble.md`. Flag any agent where either file reference is missing or uses a stale path (excluding exceptions: static-analysis, doc-writer). Note: inlined copies in `build/SKILL.md` and `fix/SKILL.md` Stage 5b are not checked here — verify those manually when updating the preamble.
 
