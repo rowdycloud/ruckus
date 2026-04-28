@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [0.1.2] — 2026-04-27
 
 ### Changed
 
@@ -12,6 +12,7 @@
 - Doc-writer agent writes to root `CLAUDE.md` and `.ruckus/known-pitfalls.md` (E01.S1)
 - Update all agent preambles and skill references to use `.ruckus/` paths (E01.S1)
 - ADR-005 and ADR-006 updated with footnotes noting the directory rename (E01.S1)
+- fix/SKILL.md description: "Self-upgrades" → "Offers to create" investigator agent (E01.S8)
 
 ### Fixed
 
@@ -29,11 +30,21 @@
   - Summary line updated from ">2 attempts" to "after 2 auto-fix attempts" for consistency
   - review-plan: add `.ruckus/` prefix to known-pitfalls.md path reference
   - review-plan: return NEEDS REVISION when CLAUDE.md missing, note gap when known-pitfalls.md missing
+- Setup hardening: explicit gate enforcing all 6 required fields before file creation, define "gap" for enrich mode, explicit formatter row removal when no formatter provided (E01.S7)
+- Upgrade hardening: preserve user-added hooks when merging settings.json (E01.S7)
 
 ### Added
 
 - Upgrade migration step: detects `docs/claude/` in existing projects and offers to move files to `.ruckus/` (E01.S1)
 - `.ruckus/` row added to CLAUDE.md structure table (E01.S1)
+- Agent preamble drift documentation: explain why static-analysis and doc-writer differ from canonical preamble (E01.S5)
+- Implementer-prompt sync comment noting relationship to agent-preamble.md (E01.S5)
+- Upgrade preamble drift check: flags agents with stale context-loading instructions (E01.S5)
+- Audit-epic token budget batching: batch per-story reviews in groups of 5 for epics with 10+ stories (E01.S6)
+- README: review vs review-plan relationship explanation (E01.S8)
+- README: context management troubleshooting entry for large builds (E01.S8)
+- README: token usage table notes compaction savings (E01.S8)
+- README: inline "maturity" definition on first use in Quick Start (E01.S8)
 
 ## [0.1.1] — 2026-04-24
 
