@@ -1,0 +1,25 @@
+docs/plans/fix-E01-audit-findings-plan.md
+  ead1dfcff535d5e1 1-74
+docs/planning/epics/E01-directory-rename-pipeline-hardening-audit.md
+  ead1dfcff535d5e1 1-132
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "0180e8f067b2a63a88d8b058970d632763e38d4f",
+  "prompts": {
+    "ead1dfcff535d5e1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9dc17ab5-ea4f-47a4-9b88-58842874ab1b",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 132,
+      "total_deletions": 0,
+      "accepted_lines": 206,
+      "overriden_lines": 0
+    }
+  }
+}
