@@ -1,9 +1,12 @@
 # E01: Directory Rename + Pipeline Hardening
 
-**Status:** In Progress
+**Status:** Complete
 **Plugin Version:** 0.1.2
 **Dependencies:** v0.1.1 (tagged, current)
 **Validated:** 2026-04-24
+**Completed:** 2026-04-28
+**Released:** v0.1.2 — 2026-04-27
+**Audit:** 42/45 ACs MET, 3 PARTIAL (cosmetic), 0 NOT MET — see [E01-directory-rename-pipeline-hardening-audit.md](E01-directory-rename-pipeline-hardening-audit.md)
 
 ---
 
@@ -573,16 +576,16 @@ Target behavior: On first use, add parenthetical: "maturity level (greenfield, s
 
 ## Exit Criteria
 
-- [ ] All 8 stories complete
-- [ ] `CLAUDE.md` updated to reflect `.ruckus/` structure and any new conventions
-- [ ] `README.md` updated with `.ruckus/` paths, documentation corrections, and new troubleshooting entries
-- [ ] `CHANGELOG.md` updated with v0.1.2 release entry
-- [ ] All cross-references valid (skills reference existing agents, agents reference existing files)
-- [ ] `plugin.json` version bumped to 0.1.2
-- [ ] fix/SKILL.md stays at or under 300 lines after all changes
-- [ ] build/SKILL.md stays at or under 300 lines after all changes
-- [ ] Zero `docs/claude/` references in active plugin files
-- [ ] Tag `v0.1.2` pushed
+- [x] All 8 stories complete
+- [x] `CLAUDE.md` updated to reflect `.ruckus/` structure and any new conventions
+- [x] `README.md` updated with `.ruckus/` paths, documentation corrections, and new troubleshooting entries
+- [x] `CHANGELOG.md` updated with v0.1.2 release entry
+- [x] All cross-references valid (skills reference existing agents, agents reference existing files)
+- [x] `plugin.json` version bumped to 0.1.2
+- [x] fix/SKILL.md stays at or under 300 lines after all changes (299 lines, 1 line headroom)
+- [x] build/SKILL.md stays at or under 300 lines after all changes (294 lines, 6 lines headroom)
+- [x] Zero `docs/claude/` references in active plugin files (only intentional legacy-detection/migration logic remains in upgrade and setup skills)
+- [x] Tag `v0.1.2` pushed
 
 ---
 

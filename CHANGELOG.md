@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Upgrade skill no longer offers to install plugin-shipped agents into user projects — agents ship with the plugin and are loaded via `subagent_type`, never copied (E01 audit follow-up)
+
+### Added
+
+- New pitfall in `.ruckus/known-pitfalls.md`: plugin-shipped agents must not be inventoried for user installation
+- E01 epic audit report: 45 ACs evaluated, 42 MET, 3 PARTIAL (cosmetic), 0 NOT MET
+
 ## [0.1.2] — 2026-04-27
 
 ### Changed
