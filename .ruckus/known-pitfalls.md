@@ -9,7 +9,7 @@ Pitfalls discovered through development. Updated by `/ruckus:build` and `/ruckus
 
 ## Domain-Specific
 
-<!-- Pitfalls related to the project's domain logic -->
+- **Agent files are plugin-shipped, not project-installed.** All 7 agents are loaded via `subagent_type` (e.g., `ruckus:code-reviewer`) from the plugin cache. The upgrade skill must never classify agent files as "New" or offer to copy them to `.claude/agents/`. The only valid agent-related check during upgrade is preamble drift on pre-existing `.claude/agents/` files.
 
 ## Data & State
 
