@@ -37,7 +37,7 @@ If yes: create `.roughly/` directory if it doesn't exist. Move (preserving conte
 4. **Co-existence of `docs/claude/` and `.ruckus/`:** If both legacy directories exist, the v0.1.2 migration step above ran first and wrote to `.roughly/`. The v0.1.4 step then encounters non-empty `.roughly/` per the conflict check at step 2. Handle as step 2.
 
 5. **Move (idempotent):** First apply any `conflict_action` recorded at step 2:
-   - `keep .ruckus` → before overwriting, copy `.roughly/` to `.roughly.backup-[date]/` (mirrors the STEP 4 backup pattern). Then replace `.roughly/` with `.ruckus/` content using the command from step 1.
+   - `keep .ruckus` → rename `.roughly/` to `.roughly.backup-[date]/` (this serves as backup AND clears the destination — `git mv`/`mv` cannot overwrite an existing non-empty directory, so a separate copy-then-overwrite would deadlock). Then move `.ruckus/` to `.roughly/` using the command from step 1; the standard per-file moves below skip silently because `.ruckus/` no longer exists.
    - `keep .roughly` → identify any files present in both `.ruckus/` and `.roughly/`; log: `"Discarded from .ruckus/ in favor of .roughly/: [X, Y, Z]"` (omit if none conflict). Then move only files from `.ruckus/` that do not already exist in `.roughly/`.
    - `diff` → per-file user choice.
 

@@ -3,7 +3,7 @@
 Project: {{PROJECT_NAME}}
 Domain: {{DOMAIN_DESCRIPTION}}
 
-Pitfalls discovered through development. Updated by `/ruckus:build` and `/ruckus:fix` wrap-up stages.
+Pitfalls discovered through development. Updated by `/roughly:build` and `/roughly:fix` wrap-up stages.
 
 ---
 
