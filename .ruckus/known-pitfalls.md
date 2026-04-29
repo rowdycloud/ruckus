@@ -15,7 +15,7 @@ Pitfalls discovered through development. Updated by `/ruckus:build` and `/ruckus
 
 ## Data & State
 
-- **CLAUDE.md as the source of truth for verify-all commands has two known failure modes.** Teams with mandated CLAUDE.md formats may not permit Roughly's Commands table, and third-party agents (claude-mem and others) that rewrite CLAUDE.md programmatically can clobber it. Session-length compaction is *not* a failure mode — skills explicitly `Read` CLAUDE.md at runtime per ADR-006, so the disk file is authoritative regardless of what was autoloaded. If breakage is reported, the clean fix is an additive `.ruckus/commands.md` fallback that skills check first, falling back to CLAUDE.md — strictly additive, no migration. Stay on CLAUDE.md until that happens to avoid a two-source-of-truth mental model.
+- **CLAUDE.md as the source of truth for verify-all commands has two known failure modes.** Teams with mandated CLAUDE.md formats may not permit Roughly's Commands table, and third-party agents (claude-mem and others) that rewrite CLAUDE.md programmatically can clobber it. Session-length compaction is *not* a failure mode — skills explicitly `Read` CLAUDE.md at runtime per ADR-006, so the disk file is authoritative regardless of what was autoloaded. If breakage is reported, the clean fix is an additive `.roughly/commands.md` fallback that skills check first, falling back to CLAUDE.md — strictly additive, no migration. Stay on CLAUDE.md until that happens to avoid a two-source-of-truth mental model.
 
 ## Integration
 
