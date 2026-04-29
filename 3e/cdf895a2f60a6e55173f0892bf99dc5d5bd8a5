@@ -1,0 +1,38 @@
+skills/setup/SKILL.md
+  213d771f809d92ef 39-40
+skills/fix/SKILL.md
+  213d771f809d92ef 19
+skills/review-plan/SKILL.md
+  213d771f809d92ef 13
+skills/review/SKILL.md
+  213d771f809d92ef 18
+skills/review-epic/SKILL.md
+  213d771f809d92ef 17
+skills/build/SKILL.md
+  213d771f809d92ef 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "3ecdf895a2f60a6e55173f0892bf99dc5d5bd8a5",
+  "prompts": {
+    "213d771f809d92ef": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "402af693-a2ea-4149-83b8-f7109da2c4ea",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 7,
+      "total_deletions": 7,
+      "accepted_lines": 7,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_5c32ae20a746c8": {
+      "author": "Nick Kirkes"
+    }
+  }
+}
