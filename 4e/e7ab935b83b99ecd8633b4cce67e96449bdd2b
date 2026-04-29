@@ -1,0 +1,42 @@
+.claude-plugin/marketplace.json
+  6579f1669837083c 8
+skills/review-plan/SKILL.md
+  6579f1669837083c 3,19
+.claude-plugin/plugin.json
+  6579f1669837083c 2
+skills/fix/SKILL.md
+  6579f1669837083c 56,107,202,214,255,260
+skills/build/SKILL.md
+  6579f1669837083c 96,195,209,250,255
+skills/upgrade/SKILL.md
+  6579f1669837083c 18,25,39
+skills/review/SKILL.md
+  6579f1669837083c 80
+skills/setup/SKILL.md
+  6579f1669837083c 40,149,169-170
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "4ee7ab935b83b99ecd8633b4cce67e96449bdd2b",
+  "prompts": {
+    "6579f1669837083c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9bdbe4dc-aaf9-447b-980d-a6e4422fed15",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 23,
+      "total_deletions": 23,
+      "accepted_lines": 23,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_5c32ae20a746c8": {
+      "author": "Nick Kirkes"
+    }
+  }
+}
