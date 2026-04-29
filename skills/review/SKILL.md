@@ -15,6 +15,8 @@ Review scope: $ARGUMENTS
 If `$ARGUMENTS` is empty, review all uncommitted changes:
 !`git diff --name-only HEAD 2>/dev/null || echo "no changes"`
 
+**Pre-flight migration check:** If `.ruckus/` directory exists in the project, abort with: "Legacy v0.1.3 installation detected. Run `/roughly:upgrade` first to migrate from `.ruckus/` to `.roughly/`, then re-run."
+
 ---
 
 ## STEP 1: DISPATCH AGENTS

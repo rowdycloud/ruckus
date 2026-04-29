@@ -28,7 +28,7 @@ Also detect:
 - Test framework (jest, vitest, pytest, go test, etc.)
 - Formatter (prettier, black, gofmt, etc.)
 - CI configuration (.github/workflows, .gitlab-ci, etc.)
-- Existing .claude/, .roughly/, or docs/claude/ directory
+- Existing .claude/, .ruckus/, .roughly/, or docs/claude/ directory
 
 Display: "Project maturity: [level] ([N] source files). Detected: [test framework], [formatter], [CI]."
 
@@ -36,7 +36,10 @@ Display: "Project maturity: [level] ([N] source files). Detected: [test framewor
 
 ## STEP 2: CHECK EXISTING STATE
 
-If `docs/claude/` exists:
+If `.ruckus/` exists:
+> "Legacy v0.1.3 installation detected at `.ruckus/`. Run `/roughly:upgrade` first to migrate to `.roughly/`, then re-run `/roughly:setup` if needed. (proceed anyway / abort)"
+
+Else if `docs/claude/` exists:
 > "Legacy Roughly installation detected at `docs/claude/`. Run `/roughly:upgrade` to migrate to `.roughly/` first, then re-run `/roughly:setup` if needed. (proceed anyway / abort)"
 
 Else if `.roughly/` or `.claude/` already exists:

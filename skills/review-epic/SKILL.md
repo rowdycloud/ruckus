@@ -14,6 +14,8 @@ Epic file: $ARGUMENTS
 
 If `$ARGUMENTS` is empty, ask: **"Which epic file should I review? (provide path)"**
 
+**Pre-flight migration check:** If `.ruckus/` directory exists in the project, abort with: "Legacy v0.1.3 installation detected. Run `/roughly:upgrade` first to migrate from `.ruckus/` to `.roughly/`, then re-run."
+
 ---
 
 ## STEP 1: READ AND VALIDATE

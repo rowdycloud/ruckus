@@ -16,6 +16,8 @@ You are the fix orchestrator. Drive this pipeline sequentially with human gates 
 
 Issue to fix: $ARGUMENTS
 
+**Pre-flight migration check:** If `.ruckus/` directory exists in the project, abort with: "Legacy v0.1.3 installation detected. Run `/roughly:upgrade` first to migrate from `.ruckus/` to `.roughly/`, then re-run."
+
 ---
 
 ## STAGE 1: INTAKE
