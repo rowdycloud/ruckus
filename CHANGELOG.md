@@ -14,6 +14,7 @@
 - v0.1.2 upgrade migration step (`docs/claude/` → `.ruckus/`) modified to migrate directly to `.roughly/`, skipping the `.ruckus/` intermediate for users upgrading from v0.1.0/v0.1.1 directly to v0.1.4 (E02.S2.2)
 - Agent preamble path reference updated from `.ruckus/known-pitfalls.md` to `.roughly/known-pitfalls.md` in `agents/agent-preamble.md` (canonical) and the 6 consumer agents (code-reviewer, discovery, epic-reviewer, investigator, silent-failure-hunter, doc-writer); `static-analysis.md` remains the documented exception (E02.S2.3)
 - This repo's own dogfood `.ruckus/` directory renamed to `.roughly/` via `git mv`, with content updates in `known-pitfalls.md` (project name, domain description, command references, subagent_type example) and `workflow-upgrades` (version-line identifier). `git log --follow` continuity preserved across both v0.1.2 and v0.1.4 transitions (E02.S2.6)
+- Setup templates updated for new project installs: `skills/setup/templates/CLAUDE.md.template` L33 (`.ruckus/known-pitfalls.md` → `.roughly/known-pitfalls.md`) and `skills/setup/templates/known-pitfalls.md.template` L6 (`/ruckus:build` and `/ruckus:fix` → `/roughly:build` and `/roughly:fix`). Existing `{{PLACEHOLDER}}` markers and the unchanged `claudeignore.template` / `settings.json.template` are preserved verbatim. Folded into PR #19 as a P1 follow-up rather than a separate PR because deferring would have shipped a broken first-install experience for new `/roughly:setup` runs (E02.S2.4)
 
 ### Added
 
