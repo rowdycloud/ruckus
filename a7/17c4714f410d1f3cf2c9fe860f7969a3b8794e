@@ -1,0 +1,32 @@
+.claude/settings.json
+  c2f1c5716b5ee08b 2-14
+.claude/hooks/verify-all.sh
+  c2f1c5716b5ee08b 1-46
+.ruckus/workflow-upgrades
+  c2f1c5716b5ee08b 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "a717c4714f410d1f3cf2c9fe860f7969a3b8794e",
+  "prompts": {
+    "c2f1c5716b5ee08b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "58e4c2e9-d815-44c6-824a-0c1cff71d92e",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 61,
+      "total_deletions": 2,
+      "accepted_lines": 60,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_5c32ae20a746c8": {
+      "author": "Nick Kirkes"
+    }
+  }
+}
