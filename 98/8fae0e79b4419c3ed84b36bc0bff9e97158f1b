@@ -1,0 +1,28 @@
+CHANGELOG.md
+  e49dba79395d6394 3-47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "988fae0e79b4419c3ed84b36bc0bff9e97158f1b",
+  "prompts": {
+    "e49dba79395d6394": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8ce63a64-f2ce-4233-8a01-04d493160e1b",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 45,
+      "total_deletions": 0,
+      "accepted_lines": 45,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_5c32ae20a746c8": {
+      "author": "Nick Kirkes"
+    }
+  }
+}
