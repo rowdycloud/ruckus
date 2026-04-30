@@ -42,3 +42,5 @@ Maintaining two commands (`build` and `build-ui`) meant duplicating the entire 8
 
 ### Neutral
 - Projects with no UI work at all will never trigger the frontend-design loading — the flag defaults to `no`
+
+> **Note (v0.1.4):** The plugin was renamed from `ruckus` to `roughly`. Slash commands now use the `/roughly:*` namespace; the plugin-installed dotdir is `.roughly/`. Original identifiers above reflect the original naming.

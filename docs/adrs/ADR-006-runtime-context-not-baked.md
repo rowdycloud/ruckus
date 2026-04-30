@@ -45,3 +45,5 @@ This also means CLAUDE.md quality directly determines plugin quality. A weak CLA
 - The `agent-preamble.md` file provides a canonical reference for agents to read CLAUDE.md and known-pitfalls.md, reducing duplication of the reading instruction across agent prompts
 
 > **Note (v0.1.2):** `docs/claude/` was renamed to `.ruckus/`. Path references above reflect the updated structure.
+
+> **Note (v0.1.4):** The plugin was renamed from `ruckus` to `roughly`. Slash commands now use the `/roughly:*` namespace; the plugin-installed dotdir is `.roughly/`. Original identifiers above reflect the original naming.

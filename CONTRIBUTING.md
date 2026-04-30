@@ -1,17 +1,17 @@
-# Contributing to Ruckus
+# Contributing to Roughly
 
 This project follows the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you agree to uphold it.
 
 ## Getting Started
 
 1. Fork and clone the repo
-2. Test locally from a scratch project: `claude --plugin-dir /path/to/your/ruckus-clone`
-3. Run `/ruckus:setup` in the scratch project to verify the bootstrap flow
-4. Try `/ruckus:build` on a small feature to see the full pipeline
+2. Test locally from a scratch project: `claude --plugin-dir /path/to/your/roughly-clone`
+3. Run `/roughly:setup` in the scratch project to verify the bootstrap flow
+4. Try `/roughly:build` on a small feature to see the full pipeline
 
 ## What to Contribute
 
-Improvements to Ruckus — built with Ruckus. Use `/ruckus:build` to implement your changes.
+Improvements to Roughly — built with Roughly. Use `/roughly:build` to implement your changes.
 
 - Bug reports with reproduction steps (include Claude Code version)
 - Documentation improvements (README, ADRs, CLAUDE.md)
@@ -51,8 +51,8 @@ All conventions are documented in [CLAUDE.md](CLAUDE.md). The key ones:
 
 There is no automated test suite — this is pure markdown. To verify changes:
 
-1. Run `claude --plugin-dir /path/to/your/ruckus-clone` in a test project
-2. Exercise the skill you changed (e.g., `/ruckus:build` for build changes)
+1. Run `claude --plugin-dir /path/to/your/roughly-clone` in a test project
+2. Exercise the skill you changed (e.g., `/roughly:build` for build changes)
 3. Check that frontmatter is valid YAML
 4. Check that cross-references (agent names in skills, file paths) are accurate
 5. Verify line/word limits: skills < 300 lines, agents < 500 words

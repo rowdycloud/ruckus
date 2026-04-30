@@ -41,3 +41,5 @@ Every other agent operates on a bounded scope: one task (implementation), one di
 
 ### Neutral
 - Model assignments can be overridden per-session by the user (`claude --model opus`) if they want Opus for a specific run
+
+> **Note (v0.1.4):** The plugin was renamed from `ruckus` to `roughly`. Slash commands now use the `/roughly:*` namespace; the plugin-installed dotdir is `.roughly/`. Original identifiers above reflect the original naming.

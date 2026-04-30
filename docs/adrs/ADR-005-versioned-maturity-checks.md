@@ -50,3 +50,5 @@ The three-response UX (yes / not yet / never) respects user autonomy. "Not yet" 
 - The upgrades file doubles as a lightweight project history — you can see when the investigator was added, when tests were integrated, etc.
 
 > **Note (v0.1.2):** `docs/claude/` was renamed to `.ruckus/`. Path references above reflect the updated structure.
+
+> **Note (v0.1.4):** The plugin was renamed from `ruckus` to `roughly`. Slash commands now use the `/roughly:*` namespace; the plugin-installed dotdir is `.roughly/`. Original identifiers above reflect the original naming.

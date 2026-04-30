@@ -1,6 +1,6 @@
-# Ruckus
+# Roughly
 
-Ruckus is a Claude Code plugin that implements gated development pipelines with subagent-per-task execution. MIT licensed, by Nick Kirkes.
+Roughly is a Claude Code plugin that implements gated development pipelines with subagent-per-task execution. MIT licensed, by Nick Kirkes.
 
 This is a plugin, not a standalone app. It runs inside Claude Code sessions in the user's project.
 
@@ -11,11 +11,11 @@ This is a plugin, not a standalone app. It runs inside Claude Code sessions in t
 | `skills/<name>/SKILL.md` | Skill definitions (9 skills) |
 | `agents/<name>.md` | Agent definitions (7 agents) |
 | `agents/agent-preamble.md` | Canonical sync reference for project context loading (see note below) |
-| `skills/setup/templates/` | Templates populated by `/ruckus:setup` |
+| `skills/setup/templates/` | Templates populated by `/roughly:setup` |
 | `skills/build/implementer-prompt.md` | Reference copy of implementation subagent prompt (runtime copy is inlined in build/fix SKILL.md) |
 | `skills/build/spec-reviewer-prompt.md` | Reference copy of spec compliance checklist (runtime copy is inlined in build/fix SKILL.md) |
 | `docs/adrs/` | Architecture Decision Records (ADR-001 through ADR-008) |
-| `.ruckus/` | Runtime files installed per-project: `known-pitfalls.md` and `workflow-upgrades` |
+| `.roughly/` | Runtime files installed per-project: `known-pitfalls.md` and `workflow-upgrades` |
 | `.claude-plugin/plugin.json` | Plugin manifest |
 
 **agent-preamble.md** is a sync reference, not an auto-include. Claude Code plugins have no include mechanism. Each agent inlines the preamble text in its Process step 1. When updating, manually sync to all agents listed in the file header. See ADR-003 for the shared-reference pattern.
@@ -26,7 +26,7 @@ This is a plugin, not a standalone app. It runs inside Claude Code sessions in t
 
 There is no build step — this is pure markdown.
 
-**Test locally:** `claude --plugin-dir /path/to/your/ruckus-clone` from a test project.
+**Test locally:** `claude --plugin-dir /path/to/your/roughly-clone` from a test project.
 
 **Verify structure:** Check frontmatter fields, cross-references between skills and agents, file counts, line/word limits.
 
