@@ -15,7 +15,7 @@ Given an epic file, review it holistically — checking that stories are technic
 
 ## Process
 
-1. **Read project context** — CLAUDE.md and .ruckus/known-pitfalls.md
+1. **Read project context** — CLAUDE.md and .roughly/known-pitfalls.md
 2. **Read the epic** — Understand all stories, their ACs, and technical approaches
 3. **Cross-story analysis** — Check dependencies, ordering, shared concerns
 4. **Per-story review** — Technical accuracy, feasibility, AC quality

@@ -1,5 +1,50 @@
 # Changelog
 
+## [0.1.4] — In Progress (E02 rename release)
+
+> Hard-cut rename from `ruckus` to `roughly`. Behavior is identical to v0.1.3 — only names, paths, namespace identifiers, and the workflow-upgrades version-line identifier change. Final release date and tag will be set when S2.7 (verification, version bump, tag) completes.
+
+### Changed
+
+- Renamed plugin from `ruckus` to `roughly`. Hard cut with no aliases or backwards compatibility (E02.S2.1)
+- Plugin name field updated in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json` from `ruckus` to `roughly` (E02.S2.1)
+- Slash command namespace migrated from `/ruckus:*` to `/roughly:*` across all 9 skills — `/roughly:build`, `/roughly:fix`, `/roughly:review`, `/roughly:review-plan`, `/roughly:review-epic`, `/roughly:audit-epic`, `/roughly:verify-all`, `/roughly:setup`, `/roughly:upgrade` (E02.S2.1)
+- Plugin-installed dotdir migrated from `.ruckus/` to `.roughly/` in skill bodies and v0.1.4 upgrade-migration logic (E02.S2.2)
+- Workflow-upgrades version-line identifier renamed from `ruckus-version` to `roughly-version` across setup and upgrade skills (E02.S2.2)
+- v0.1.2 upgrade migration step (`docs/claude/` → `.ruckus/`) modified to migrate directly to `.roughly/`, skipping the `.ruckus/` intermediate for users upgrading from v0.1.0/v0.1.1 directly to v0.1.4 (E02.S2.2)
+- Agent preamble path reference updated from `.ruckus/known-pitfalls.md` to `.roughly/known-pitfalls.md` in `agents/agent-preamble.md` (canonical) and the 6 consumer agents (code-reviewer, discovery, epic-reviewer, investigator, silent-failure-hunter, doc-writer); `static-analysis.md` remains the documented exception (E02.S2.3)
+- This repo's own dogfood `.ruckus/` directory renamed to `.roughly/` via `git mv`, with content updates in `known-pitfalls.md` (project name, domain description, command references, subagent_type example) and `workflow-upgrades` (version-line identifier). `git log --follow` continuity preserved across both v0.1.2 and v0.1.4 transitions (E02.S2.6)
+
+### Added
+
+- **NEW v0.1.4 upgrade-migration step in `skills/upgrade/SKILL.md`** — detects existing `.ruckus/` directories in user projects and migrates to `.roughly/`. 10-point spec covers: git-vs-plain-`mv` detection, `.ruckus/.migration-in-progress` marker file for partial-failure idempotency, conflict-or-resume branching with explicit abort behavior, idempotent moves, version-line identifier rewrite, anchored boilerplate regex with warn-on-skip, literal-substring CLAUDE.md update with displayed match counts, interactive prompt for user-extra files, marker cleanup, idempotency contract on re-runs (E02.S2.2)
+- **Pre-flight migration check in 6 skills** (`build`, `fix`, `review`, `review-plan`, `review-epic`, `setup`) — detects legacy `.ruckus/.migration-in-progress`, `.ruckus/known-pitfalls.md`, or `.ruckus/workflow-upgrades` state and aborts with a redirect to `/roughly:upgrade`. Protects v0.1.3 users who install the new plugin without first running the migration. Beneficial scope expansion beyond the original S2.2 spec (E02.S2.2)
+- **Doc-writer path-string sync note in `agents/agent-preamble.md` HTML comment** — exceptions paragraph now explicitly notes that `doc-writer.md` L22 (write-target reference) requires path-string sync whenever the known-pitfalls.md path changes, even though doc-writer's pattern is genuinely different from the preamble-inlining consumers. The L5–L8 manual-sync target list remains unchanged (E02.S2.3)
+- **Two new pitfalls captured in `.roughly/known-pitfalls.md`** during S2.3 implementation, recorded via the documented Stage-8 wrap-up flow (E02.S2.3 follow-up commit)
+- **Structural Stop-hook (`.claude/hooks/verify-all.sh`)** — fires after every Claude turn in the dogfood repo, reports drift on: stale `.ruckus/known-pitfalls` references in `agents/`, skill bodies > 300 lines, agent bodies > 500 words, and HTML comment integrity in `agents/agent-preamble.md`. Non-blocking and informational; no-op outside the plugin repo. Aligns with ADR-005 maturity-check `stop-hook-v1` (E02.S2.3 scope expansion)
+
+### Fixed
+
+- `skills/fix/SKILL.md` post-S2.2-merge line count (301) reduced to 299 by collapsing the standalone "Format per entry" sentence in the MATURITY CHECKS section into the preceding "Check IDs are versioned" paragraph. Restores compliance with CLAUDE.md's 300-line skill body cap. No behavior change (commit `b2fa658`)
+- Stop-hook script gracefully falls back to a heredoc-based JSON emission when `jq` is unavailable on the user's system (commit `1a01f55`)
+
+### Notes
+
+- Behavior is identical to v0.1.3 across all 9 skills and 7 agents. The plugin's pipeline gates, subagent dispatch patterns, two-stage review (ADR-007), Opus-for-epic-reviewer-only model selection (ADR-008), and runtime-context-loading from CLAUDE.md / known-pitfalls.md (ADR-006) are all preserved unchanged.
+- Prior CHANGELOG entries (v0.1.0 through v0.1.3) retain `ruckus` naming as historical fact.
+- ADR body text in ADR-004/005/006/008 retains its original `/ruckus:*` and capital-R `Ruckus` references as historical decision text. v0.1.4 footnotes will be appended to those four ADRs in S2.5.
+- `docs/plans/**` historical implementation plans retain their original naming as historical fact.
+- Remaining E02 work for v0.1.4: S2.4 (templates), S2.5 (README/CLAUDE.md/CONTRIBUTING.md prose + ADR footnotes + the user-facing "Migrating from ruckus (v0.1.3) to roughly (v0.1.4)" README subsection), S2.7 (final verification, version bump, finalize this CHANGELOG entry, tag).
+
+### Migration
+
+If you were using the previous `ruckus` plugin, follow these steps once per machine and once per project (the user-facing migration prose will land in README.md via S2.5; this is the CHANGELOG copy):
+1. Install the new plugin under the `roughly` name: `/plugin marketplace add nickkirkes/roughly` followed by `/plugin install roughly@nickkirkes`.
+2. Run `/roughly:upgrade` from each project that previously used `/ruckus:*`. The upgrade detects the legacy `.ruckus/` directory and migrates `known-pitfalls.md`, `workflow-upgrades`, and any path references in your root `CLAUDE.md` to `.roughly/`. The migration is resumable on partial failure via the `.ruckus/.migration-in-progress` marker.
+3. Optionally uninstall the old plugin: `/plugin uninstall ruckus`. The new and old plugins can coexist temporarily, but only `/roughly:upgrade` runs the migration; the old `/ruckus:*` commands continue to operate on the legacy paths until uninstalled.
+
+The `### Migration` section is a deliberate departure from Keep-a-Changelog convention (Added/Changed/Deprecated/Removed/Fixed/Security only). The rename is the one and only release where existing users must take explicit action — the section's prominence outweighs strict convention conformance.
+
 ## [0.1.3] — 2026-04-28
 
 ### Fixed

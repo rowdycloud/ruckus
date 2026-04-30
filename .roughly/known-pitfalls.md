@@ -1,15 +1,15 @@
 # Known Pitfalls
 
-Project: Ruckus
-Domain: Ruckus is a Claude Code plugin that implements gated development pipelines with subagent-per-task execution.
+Project: Roughly
+Domain: Roughly is a Claude Code plugin that implements gated development pipelines with subagent-per-task execution.
 
-Pitfalls discovered through development. Updated by `/ruckus:build` and `/ruckus:fix` wrap-up stages.
+Pitfalls discovered through development. Updated by `/roughly:build` and `/roughly:fix` wrap-up stages.
 
 ---
 
 ## Domain-Specific
 
-- **Agent files are plugin-shipped, not project-installed.** All 7 agents are loaded via `subagent_type` (e.g., `ruckus:code-reviewer`) from the plugin cache. The upgrade skill must never classify agent files as "New" or offer to copy them to `.claude/agents/`. The only valid agent-related check during upgrade is preamble drift on pre-existing `.claude/agents/` files.
+- **Agent files are plugin-shipped, not project-installed.** All 7 agents are loaded via `subagent_type` (e.g., `roughly:code-reviewer`) from the plugin cache. The upgrade skill must never classify agent files as "New" or offer to copy them to `.claude/agents/`. The only valid agent-related check during upgrade is preamble drift on pre-existing `.claude/agents/` files.
 
 - **Plan mode (Claude Code's built-in) hijacks the build/fix pipeline.** When `/roughly:build` or `/roughly:fix` runs with plan mode active, plan-mode's workflow (Phase 1–5 → ExitPlanMode) substitutes for the build skill's Stages 1–4. The build skill's preamble warns about this, but it can still happen via auto-engagement at SessionStart. Most common silent failure: Stage 4 (`/roughly:review-plan` dispatch) gets skipped because plan-mode's generic `Plan` subagent looks like it fulfills the design-review step — it does NOT. The `Plan` agent designs implementations; `/roughly:review-plan` returns a structured PASS/NEEDS REVISION verdict against the codebase. If plan mode is active when invoking a Roughly pipeline, exit plan mode and re-invoke; or explicitly dispatch `/roughly:review-plan` to recover.
 
@@ -26,6 +26,10 @@ Pitfalls discovered through development. Updated by `/ruckus:build` and `/ruckus
 - **Pre-implementation review (review-epic, review-plan) catches design issues but not always execution bugs.** A spec can pass two `/roughly:review-epic` iterations and a `/roughly:review-plan` pass yet still contain logic bugs that only execution-tracing catches in code review. Example: the S2.2 v0.1.4 migration step had "marker write before conflict check" ordering that made the conflict-prompt branch unreachable on first run — pre-implementation reviewers read the steps as a bullet list; only the Stage 6 code-reviewer noticed by tracing execution order. Don't treat spec-faithfulness as a substitute for code review. Stage 6 catches what Stages 2–4 miss.
 
 - **Grep-based ACs are authoritative over a spec's line-enumeration tables.** When an epic specifies "zero `\bRuckus\b` matches in skills/" alongside an enumerated list of lines to edit, the AC is the contract — the line list is a (sometimes incomplete) implementation hint. Plans should reconcile the AC against `rg -n` output during plan-write and add any missing lines to the substitution table. S2.2 had two reconciled gaps: setup/SKILL.md L40 (mixed-content line, caught by plan-reviewer) and L3 frontmatter descriptions (caught at plan-write time). Pattern: trust the regex, not the line number.
+
+- **Splitting a doc-only rename from a runtime-directory rename leaves the dogfood repo silently broken between merges.** When an epic partitions paired path renames into separate stories — e.g., S2.3 (agent docs reference `.roughly/known-pitfalls.md`) and S2.6 (this repo's `.ruckus/` → `.roughly/` directory rename) — merging the doc-only story first means every agent in *this dogfood repo* reads from a path that does not exist on disk until S2.6 lands. Claude Code's file read on a missing path returns empty silently, so agents proceed without project context with no error signal. When designing future split renames, either bundle the paired stories into one PR or land them in immediate succession; if they must be sequenced, document the silent-failure window in the commit message so reviewers can decide whether to merge or hold.
+
+- **Appending text to an HTML comment block where `-->` is inline shifts the closing-delimiter line number.** When an existing HTML comment ends with `... last sentence. -->` on a single line and you insert a new sentence on its own line before `-->`, the closing delimiter migrates to a new line number along with the new content. Any sync notes, line-citation comments, or downstream references to "L13" (or wherever `-->` used to be) become stale. Pattern: when citing the line of an HTML-comment-internal note, cite the line containing the new content (where `-->` now lives), not the line where `-->` historically lived. Verify with `rg -n '<!--|-->'` after the edit — must show exactly one of each, and the new line numbers must match what surrounding documentation claims.
 
 ## Testing
 

@@ -19,7 +19,7 @@ Investigate the codebase to identify the root cause, affected files, and propose
 
 ## Process
 
-1. **Read project context** — CLAUDE.md and .ruckus/known-pitfalls.md
+1. **Read project context** — CLAUDE.md and .roughly/known-pitfalls.md
 2. **Parse the issue** — Extract symptoms, reproduction steps, affected area
 3. **Form hypotheses** — Based on symptoms, list 2-3 likely root causes
 4. **Trace code paths** — For each hypothesis, trace the execution path through the code

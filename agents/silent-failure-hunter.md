@@ -15,7 +15,7 @@ Given a set of changed files, hunt for swallowed errors, missing error handling,
 
 ## Process
 
-1. **Read project context** — CLAUDE.md and .ruckus/known-pitfalls.md
+1. **Read project context** — CLAUDE.md and .roughly/known-pitfalls.md
 2. **Read changed files** — Understand the error handling landscape
 3. **Hunt for silent failures:**
    - Empty catch blocks

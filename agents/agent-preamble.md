@@ -10,8 +10,9 @@
      but does not need known-pitfalls.md — it runs structural checks against CLAUDE.md
      directly, not implementation work where pitfall patterns would apply),
      doc-writer (writes to CLAUDE.md and known-pitfalls.md — reads them for deduplication
-     context to avoid adding duplicate entries, not as execution guidance). -->
+     context to avoid adding duplicate entries, not as execution guidance).
+     Path-string sync still required for doc-writer L22 (write-target reference) whenever the known-pitfalls.md path changes. -->
 
 Before starting your task, read these files:
 1. **CLAUDE.md** -- project conventions, commands, and stack
-2. **.ruckus/known-pitfalls.md** -- known issues to avoid repeating
+2. **.roughly/known-pitfalls.md** -- known issues to avoid repeating
