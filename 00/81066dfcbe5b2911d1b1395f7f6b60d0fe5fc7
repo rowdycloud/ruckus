@@ -1,0 +1,16 @@
+docs/planning/prompts/roughly-pm-agent-v0.1.4.md
+  h_5c32ae20a746c8 1-573
+docs/planning/prompts/roughly-pm-agent-v0.1.5.md
+  h_5c32ae20a746c8 1-82
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "0081066dfcbe5b2911d1b1395f7f6b60d0fe5fc7",
+  "prompts": {},
+  "humans": {
+    "h_5c32ae20a746c8": {
+      "author": "Nick Kirkes"
+    }
+  }
+}
