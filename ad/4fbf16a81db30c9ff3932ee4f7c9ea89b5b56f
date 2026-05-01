@@ -1,0 +1,23 @@
+.roughly/workflow-upgrades
+  bb09ce49656fd1f7 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "ad4fbf16a81db30c9ff3932ee4f7c9ea89b5b56f",
+  "prompts": {
+    "bb09ce49656fd1f7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5ce0b6ec-88c0-4038-987d-40640b212e3b",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  }
+}
