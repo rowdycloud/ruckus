@@ -1,0 +1,28 @@
+docs/plans/S02.7-final-verification-plan.md
+  94bd722be09e099e 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "f66a3f6eff4e15abb11b03161b2dd1ba30856fff",
+  "prompts": {
+    "94bd722be09e099e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4d07ec63-c958-4d29-b72c-34f5d9301a3b",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 1,
+      "total_deletions": 1,
+      "accepted_lines": 1,
+      "overriden_lines": 0
+    }
+  },
+  "humans": {
+    "h_5c32ae20a746c8": {
+      "author": "Nick Kirkes"
+    }
+  }
+}
