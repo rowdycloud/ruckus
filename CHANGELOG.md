@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased] — v0.1.5
+
+> Trust hardening + ergonomics + CI. Scope per [docs/planning/epics/E03-trust-and-ergonomics.md](docs/planning/epics/E03-trust-and-ergonomics.md).
+
+### Added
+
+- **E03.S0 — Plan-mode detection spike (½-day):** [docs/planning/spikes/plan-mode-detection-findings.md](docs/planning/spikes/plan-mode-detection-findings.md) maps the design space for plan-mode auto-detection at Stage 1 of build/fix. **Conclusion:** preamble + lightweight hook — UserPromptExpansion reading `permission_mode` from hook stdin (documented value `"plan"` when plan mode is active). Implementation is gated to E03.S1, which must first empirically verify UserPromptExpansion firing under plan mode; if falsified, S1 falls back to preamble-only per the existing fallback AC. Reference commits: `9dceb2e` (spike findings), `a4a4726` (planning pitfalls). PR pending.
+- **Two pitfalls captured in [.roughly/known-pitfalls.md](.roughly/known-pitfalls.md) Planning & Scoping section** during E03.S0 wrap-up (commit `a4a4726`):
+  - `permission_mode` in hook stdin is a programmatic plan-mode signal that planners routinely miss — applies when scoping any future story that requires detecting Claude Code harness state.
+  - "Confirmed empirically" ACs in spike stories can be unachievable from inside an active pipeline session — applies when writing ACs for any future spike. Recommends treating empirical-confirmation as "confirmed empirically OR documented as pending-verification with a clear next-story validation step."
+
 ## [0.1.4] — 2026-04-30
 
 > Hard-cut rename from `ruckus` to `roughly`. Behavior is identical to v0.1.3 — only names, paths, namespace identifiers, and the workflow-upgrades version-line identifier change.
