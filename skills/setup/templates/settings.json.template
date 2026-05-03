@@ -3,7 +3,12 @@
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "command": "{{FORMATTER_COMMAND}} $FILE_PATH"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{FORMATTER_COMMAND}} $FILE_PATH"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [

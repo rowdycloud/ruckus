@@ -1,6 +1,6 @@
-# S1 Verification Harness: UserPromptExpansion Hook Under Plan Mode
+# S1 Verification Harness: UserPromptSubmit Hook Under Plan Mode
 
-This harness verifies the load-bearing assumption underlying E03.S1's hook-based plan-mode detection mechanism. Specifically, it checks whether the `UserPromptExpansion` hook event fires when Claude Code is running in plan mode and whether the stdin JSON it receives contains a `permission_mode` field set to `"plan"`. The result (PASS / FAIL / INCONCLUSIVE) determines whether S1 ships a hook-based detector or falls back to a preamble-only warning approach.
+This harness verifies the load-bearing assumption underlying E03.S1's hook-based plan-mode detection mechanism. Specifically, it checks whether the `UserPromptSubmit` hook event fires when Claude Code is running in plan mode and whether the stdin JSON it receives contains a `permission_mode` field set to `"plan"`. The result (PASS / FAIL / INCONCLUSIVE) determines whether S1 ships a hook-based detector or falls back to a preamble-only warning approach. (The spike findings doc originally named this event `UserPromptExpansion`; the spike-doc correction note in Section 2 captures the drift.)
 
 Estimated time: 5 minutes to read, 5–10 minutes to execute.
 
@@ -78,7 +78,7 @@ Follow each step exactly. Commands are copy-paste ready.
 4. Create the settings file using the global form from Section 2:
 
    ```bash
-   printf '%s\n' '{' '  "hooks": {' '    "UserPromptExpansion": [' '      {' '        "hooks": [' '          {' '            "type": "command",' '            "command": "/tmp/s1-verify/.claude/hooks/log-stdin.sh"' '          }' '        ]' '      }' '    ]' '  }' '}' > /tmp/s1-verify/.claude/settings.json
+   printf '%s\n' '{' '  "hooks": {' '    "UserPromptSubmit": [' '      {' '        "hooks": [' '          {' '            "type": "command",' '            "command": "/tmp/s1-verify/.claude/hooks/log-stdin.sh"' '          }' '        ]' '      }' '    ]' '  }' '}' > /tmp/s1-verify/.claude/settings.json
    ```
 
    Verify it parses: `cat /tmp/s1-verify/.claude/settings.json | python3 -m json.tool` (or `jq .`) should print the JSON with no error.
