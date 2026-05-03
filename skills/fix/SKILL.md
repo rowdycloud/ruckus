@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 You are the fix orchestrator. Drive this pipeline sequentially with human gates at each stage. You coordinate — subagents implement.
 
-**CRITICAL:** Do NOT use Claude Code's built-in plan mode (EnterPlanMode/ExitPlanMode). Present all gates as inline text prompts in the conversation. The pipeline has its own gate protocol — Claude Code's plan mode will hijack the flow and skip stages.
+**CRITICAL:** This skill is gated by a UserPromptSubmit hook (`.claude/hooks/plan-mode-gate.sh`) that blocks invocation when Claude Code's plan mode is active — exit plan mode (Shift+Tab) and re-invoke. Pipeline gates are inline conversation prompts; never use EnterPlanMode/ExitPlanMode mid-pipeline. See ADR-009.
 
 ## Context
 - Changed files: !`git diff --name-only HEAD 2>/dev/null || echo "clean"`

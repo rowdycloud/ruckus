@@ -111,18 +111,50 @@ Read `skills/setup/templates/known-pitfalls.md.template`. Replace `{{PROJECT_NAM
 Read `skills/setup/templates/claudeignore.template`. Write to `.claudeignore` (project root).
 
 ### 5d. settings.json
-Create `.claude/` directory if it doesn't exist.
 
-If a formatter was provided: read `skills/setup/templates/settings.json.template`, replace `{{FORMATTER_COMMAND}}` with the formatter command, and write to `.claude/settings.json`.
+**Hook script (unconditional — do this first, before any settings.json branch):**
+Create `.claude/hooks/` if it doesn't exist. Copy `skills/setup/templates/plan-mode-gate.sh.template` to `.claude/hooks/plan-mode-gate.sh`. Set the executable bit (`chmod +x .claude/hooks/plan-mode-gate.sh`).
 
-If no formatter was provided and `.claude/settings.json` does **not** already exist: write a minimal `.claude/settings.json`:
+---
+
+**Branch 1 — formatter was provided:**
+Read `skills/setup/templates/settings.json.template`, replace `{{FORMATTER_COMMAND}}` with the formatter command, and write to `.claude/settings.json`. The template already contains both `PostToolUse` (formatter) and `UserPromptSubmit` (plan-mode-gate) entries — no additional merging required.
+
+**Branch 2 — no formatter provided AND `.claude/settings.json` does not exist:**
+Write a minimal `.claude/settings.json` that registers the plan-mode-gate hook:
 ```json
 {
-  "hooks": {}
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/plan-mode-gate.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
-If `.claude/settings.json` already exists, leave it unchanged — it may contain hooks from another plugin or a prior setup run.
+**Branch 3 — `.claude/settings.json` already exists:**
+First check whether `jq` is available (`command -v jq`). If `jq` is unavailable, halt this branch and surface a blocking-warning in Step 7 summary: `WARNING: jq not installed — could not register plan-mode-gate hook in existing .claude/settings.json. Install jq and re-run /roughly:setup, or manually add a UserPromptSubmit entry pointing at .claude/hooks/plan-mode-gate.sh.` (Skip the merge below.)
+
+If `jq` is available, validate the existing file parses cleanly first: `jq empty .claude/settings.json`. If parse fails, halt this branch and surface: `WARNING: existing .claude/settings.json is invalid JSON — plan-mode-gate not registered. Fix the file and re-run /roughly:setup.` (Skip the merge.)
+
+Only when both checks pass, inspect `.hooks.UserPromptSubmit`:
+
+- If `.hooks.UserPromptSubmit` is null or absent: add a UserPromptSubmit entry pointing at `.claude/hooks/plan-mode-gate.sh` while preserving every other field. Use `jq` to merge:
+  ```bash
+  jq '.hooks.UserPromptSubmit = [{"hooks":[{"type":"command","command":".claude/hooks/plan-mode-gate.sh"}]}]' .claude/settings.json > .claude/settings.json.tmp && mv .claude/settings.json.tmp .claude/settings.json
+  ```
+- If `.hooks.UserPromptSubmit` already has any entry: do NOT overwrite it. Surface a blocking-warning in Step 7 summary: `WARNING: existing UserPromptSubmit hook detected at .claude/settings.json — plan-mode-gate.sh not registered. Verify manually that plan-mode protection is in place.` This warning MUST appear in the Step 7 summary output (not just inline log noise) so the human sees it.
+
+---
+
+<!-- Future S2 additions: append Stop-hook registration as a fourth sub-step below -->
 
 ### 5e. workflow-upgrades
 Read the current plugin version from `.claude-plugin/plugin.json` (the `version` field).
@@ -166,7 +198,10 @@ Display what was created:
 - .roughly/known-pitfalls.md — grows as you work
 - .roughly/workflow-upgrades — tracks plugin version and maturity decisions
 - .claudeignore — keeps context lean
-- .claude/settings.json — [formatter hook configured / empty hooks structure]
+- .claude/hooks/plan-mode-gate.sh — blocks /roughly:build and /roughly:fix when plan mode is active (ADR-009)
+- .claude/settings.json — [formatter hook configured / minimal with plan-mode-gate / merged with existing]
+
+[Surface any Step 5d Branch 3 blocking-warnings here, prefixed with WARNING:]
 
 **Next steps:**
 - Run `/roughly:build` for your first feature

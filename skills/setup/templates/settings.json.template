@@ -5,6 +5,16 @@
         "matcher": "Write|Edit",
         "command": "{{FORMATTER_COMMAND}} $FILE_PATH"
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/plan-mode-gate.sh"
+          }
+        ]
+      }
     ]
   }
 }
