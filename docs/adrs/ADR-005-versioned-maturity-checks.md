@@ -44,6 +44,7 @@ The three-response UX (yes / not yet / never) respects user autonomy. "Not yet" 
 ### Negative
 - Every pipeline run reads and evaluates the upgrades file at wrap-up, adding ~200-300 tokens
 - Contributors must remember to bump version IDs when improving checks, or users won't see the improvement
+- When a check's value migrates to another mechanism, contributors must retire it (not version-bump) — see v0.1.5 footnote for the retirement disposition
 - The upgrades file format is loose (not validated), so a malformed entry could silently suppress a check
 
 ### Neutral
@@ -52,3 +53,5 @@ The three-response UX (yes / not yet / never) respects user autonomy. "Not yet" 
 > **Note (v0.1.2):** `docs/claude/` was renamed to `.ruckus/`. Path references above reflect the updated structure.
 
 > **Note (v0.1.4):** The plugin was renamed from `ruckus` to `roughly`. Slash commands now use the `/roughly:*` namespace; the plugin-installed dotdir is `.roughly/`. Original identifiers above reflect the original naming.
+
+> **Note (v0.1.5):** `pitfalls-organized-v1` and `test-verify-v1` were retired. Retirement is a third disposition (alongside add/decline/version-bump) used when a check's value migrates elsewhere — here, into the `doc-writer` agent's post-write suggestions for `.roughly/known-pitfalls.md`. Existing `*-declined` entries in user `.roughly/workflow-upgrades` files become inert but are not auto-removed.

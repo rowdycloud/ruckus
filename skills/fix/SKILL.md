@@ -260,14 +260,6 @@ If no `investigator-v1-added` in `.roughly/workflow-upgrades` AND source file co
 > "This project has [N] source files but the investigator agent isn't enabled. It improves bug diagnosis for `/roughly:fix`. Enable it? (yes / not yet / never)"
 If yes: record `investigator-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
-**Check: pitfalls-organized-v1:**
-If `.roughly/known-pitfalls.md` > 80 lines AND no `pitfalls-organized-v1` within last 30 days:
-> "known-pitfalls.md has grown to [N] lines. Deduplicate and organize?"
-
-**Check: test-verify-v1:**
-If test config exists AND verify-all test step is placeholder AND not declined:
-> "A test suite is configured. Add test execution to verify-all?"
-
 **Check: stop-hook-v1:**
 If `.claude/settings.json` has no `Stop` hook AND verify-all has 2+ meaningful checks AND not declined:
 > "Verification is robust enough to enforce. Add a Stop hook?"
