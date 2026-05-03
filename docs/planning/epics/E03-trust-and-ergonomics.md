@@ -1,6 +1,6 @@
 # E03 — Trust hardening + ergonomics + CI
 
-**Status:** In Progress (1/16 stories complete — E03.S0 spike done on `feat/S03.0-plan-mode-detection-spike` 2026-05-01, commits `9dceb2e` and `a4a4726`; PR pending. Conclusion: preamble + lightweight hook for S1 — UserPromptExpansion reading `permission_mode` from hook stdin.)
+**Status:** In Progress (2/16 stories complete — E03.S0 spike merged 2026-05-01 via PR #24 (`e5d630f`); E03.S1 implementation merged 2026-05-02 via PR #25 (`c598ef6`) with follow-up fixes `5b09864`, `a299ada`, `6d268e9`, `2c1436b` through 2026-05-03. Mechanism: preamble + `UserPromptSubmit` hook reading `permission_mode` from stdin. Spike-doc API name correction `UserPromptExpansion` → `UserPromptSubmit` recorded in ADR-009 §Spike-Doc Correction.)
 **Target version:** v0.1.5
 **Target effort:** 6-7 wk
 **Dependencies:** E01 (pipeline foundation, audit follow-up shipped v0.1.3); E02 (rename to `roughly` shipped v0.1.4 — namespace, dotdir, version-line identifier all assumed in place)
@@ -22,6 +22,8 @@ Scope is frozen. Items surfaced during epic writing that are clearly related but
 1. **Plan-mode detection mechanism uncertainty (S1).** Plan mode is signalled to the orchestrator via a `<system-reminder>` block and `ExitPlanMode` tool availability — neither is a programmatic API a *skill body* can introspect. The mechanism choice (preamble guard, hook, or both) was gated on the S0 spike. If the spike finds no reliable signal, S1 falls back to preamble-only and accepts a documented edge case where mid-pipeline auto-engagement bypasses the guard. Risk: enforcement still has a known hole post-v0.1.5; mitigated by the fallback being explicit, not silent.
 
    **Status update (2026-05-01, post-S0):** Risk narrows but does not close. The spike found that *hook scripts* (unlike skill bodies) receive a programmatic `permission_mode` field on stdin with documented value `"plan"` when plan mode is active — invalidating this risk's first sentence as written for the hook surface, though the sentence remains correct for skill-body detection. Conclusion: **preamble + lightweight hook** (UserPromptExpansion reading `permission_mode`). Risk now narrows to S1's empirical verification of UserPromptExpansion firing under plan mode (the load-bearing assumption); if S1 falsifies it, fall back to preamble-only per the existing fallback AC. Risk closes when S1 verification confirms or falsifies and the chosen path ships.
+
+   **Closure (2026-05-03, post-S1):** Closed. Empirical verification PASS captured 2026-05-02 in [ADR-009](../../adrs/ADR-009-plan-mode-detection.md) §"Step 1 Empirical Verification Result" — `UserPromptSubmit` (corrected from spike's `UserPromptExpansion`) fires under plan mode and stdin includes `permission_mode: "plan"`. Hook ships as [.claude/hooks/plan-mode-gate.sh](../../../.claude/hooks/plan-mode-gate.sh) with fail-closed posture (no `set -e`, parser-tool guards, explicit fail-closed branches at every parsing failure point). Build/fix preambles updated at L11 (substitution-only; line counts preserved at 296/299). Templated into user projects via [skills/setup/templates/plan-mode-gate.sh.template](../../../skills/setup/templates/plan-mode-gate.sh.template) and [skills/setup/templates/settings.json.template](../../../skills/setup/templates/settings.json.template) by `/roughly:setup` Step 5d. Per-skill scoping is done in-script (matching `prompt` field against `^/roughly:(build|fix)`) since Claude Code's hook `matcher` field is tool-name-only and does not support slash-command matching.
 
 2. **CI bootstrapping (S11).** The plugin tests itself against the repo containing the plugin. A naive run mutates `.roughly/`, writes plan files in `docs/plans/`, and may dirty the working tree. Self-test must run in an ephemeral worktree/checkout with strict teardown, or CI poisons source-repo state visible to subsequent commits. Risk: a CI run that "passes" but corrupts the dogfood `.roughly/` state masks bugs; mitigated by isolation contract in S11a.
 
@@ -60,7 +62,7 @@ Stories are grouped by cluster. Sequencing — which is by dependency, not roadm
 
 **Maps to roadmap item:** #1 (gates S1)
 **Type:** Investigation/spike (½-day timebox)
-**Status:** Complete on `feat/S03.0-plan-mode-detection-spike` 2026-05-01 (commits `9dceb2e` spike findings, `a4a4726` planning pitfalls). PR pending. **Conclusion: preamble + lightweight hook** — UserPromptExpansion reading `permission_mode` from hook stdin. AC2 met as partial (documented gap, not blocking — see pitfall about empirical-confirmation ACs being unachievable from inside an active pipeline session).
+**Status:** Complete on `feat/S03.0-plan-mode-detection-spike` 2026-05-01; merged via PR #24 (commit `e5d630f`). **Conclusion: preamble + lightweight hook** — `UserPromptSubmit` reading `permission_mode` from hook stdin (corrected from spike's `UserPromptExpansion` during S1 empirical verification — see [ADR-009 §Spike-Doc Correction](../../adrs/ADR-009-plan-mode-detection.md)). AC2 met as partial (documented gap, not blocking — see pitfall about empirical-confirmation ACs being unachievable from inside an active pipeline session). Spike findings doc preserved per AC10 retention decision; ADR-009 is the authoritative correction.
 
 **Files touched (as delivered):**
 - [docs/planning/spikes/plan-mode-detection-findings.md](../spikes/plan-mode-detection-findings.md) (new, 271 lines) — spike deliverable; ADR-009 reference
@@ -101,13 +103,25 @@ S1 needs a detection mechanism, but it's unclear what programmatic signals are a
 #### E03.S1: Plan-mode auto-detect/exit at Stage 1 of build/fix
 
 **Maps to roadmap item:** #1 (highest-value item in v0.1.5)
+**Status:** Complete on `feat/S03.1-plan-mode-auto-detect`; merged 2026-05-02 via PR #25 (`c598ef6`) with follow-up fixes through 2026-05-03 (`5b09864` PostToolUse template schema + harness Step 4 event name; `a299ada` plan-doc post-execution note + Branch 3 disambiguation; `6d268e9` `$FILE_PATH` quoting + fail-closed on empty stdin; `2c1436b` 3 wrap-up pitfalls). All 11 ACs met. **Authoritative artifact:** [docs/adrs/ADR-009-plan-mode-detection.md](../../adrs/ADR-009-plan-mode-detection.md).
 
-**Files touched:**
-- [skills/build/SKILL.md](../../skills/build/SKILL.md) — preamble + Stage 1
-- [skills/fix/SKILL.md](../../skills/fix/SKILL.md) — preamble + Stage 1
-- [.roughly/known-pitfalls.md](../../.roughly/known-pitfalls.md) — extend the existing plan-mode hijack entry in the Domain-Specific section
-- `docs/adrs/ADR-009-plan-mode-detection.md` (new) — documents the detection contract chosen in S0
-- Possibly `.claude/hooks/<name>.sh` (new) — only if S0 concludes a hook is required
+**Files delivered (10):**
+
+New:
+- [.claude/hooks/plan-mode-gate.sh](../../../.claude/hooks/plan-mode-gate.sh) — canonical hook source (not registered in this repo's `settings.json`)
+- [skills/setup/templates/plan-mode-gate.sh.template](../../../skills/setup/templates/plan-mode-gate.sh.template) — verbatim copy; deployed by `/roughly:setup` Step 5d
+- [docs/adrs/ADR-009-plan-mode-detection.md](../../adrs/ADR-009-plan-mode-detection.md)
+- [docs/planning/spikes/s1-verification-harness.md](../spikes/s1-verification-harness.md) — operational test doc; kept for re-verification
+- `docs/plans/E03-S1-plan-mode-auto-detect-plan.md` — build pipeline plan artifact (with post-execution note correcting API name)
+
+Modified:
+- [skills/build/SKILL.md](../../../skills/build/SKILL.md) L11 — substitution-only; line count preserved at 296
+- [skills/fix/SKILL.md](../../../skills/fix/SKILL.md) L11 — substitution-only; line count preserved at 299
+- [skills/setup/SKILL.md](../../../skills/setup/SKILL.md) Step 5d — three-branch `settings.json` registration with jq/JSON preflights and warning escalation; Step 7 summary mentions hook
+- [skills/setup/templates/settings.json.template](../../../skills/setup/templates/settings.json.template) — added `UserPromptSubmit` registration; corrected pre-existing `PostToolUse` to nested `{matcher, hooks: [{type, command}]}` shape (flat shape was broken in Claude Code 2.x)
+- [.roughly/known-pitfalls.md](../../../.roughly/known-pitfalls.md) — plan-mode hijack entry rewritten as "blocked by S1 enforcement (ADR-009)"; 3 new wrap-up pitfalls (commit `2c1436b`): markdown-list-nested heredoc fragility, `set -euo pipefail` + safety-gate inversion, spike-doc API name re-verification
+- [CLAUDE.md](../../../CLAUDE.md) L17 — "ADR-001 through ADR-009"; new ADR-009 row in Key Design Decisions table
+- [docs/adrs/README.md](../../adrs/README.md) — added "Current ADRs" list (closes AC8)
 
 **Context:**
 
@@ -118,33 +132,44 @@ S1 commits to **observable behavior only**, not a specific mechanism. Mechanism 
 **Note on ADR numbering:** The plan-format-v2 ADR previously slotted as ADR-009 in the v0.2.0 roadmap is bumped to ADR-010. ADRs are numbered by landing order; v0.1.5's plan-mode-detection ADR ships first.
 
 **Inputs from S0 (post-spike, 2026-05-01):**
-- **Mechanism:** preamble + lightweight hook. Hook = UserPromptExpansion reading `permission_mode` from hook stdin (documented value `"plan"`); blocks `/roughly:build` and `/roughly:fix` invocations when plan mode is active. Preamble = updated CRITICAL warning at [skills/build/SKILL.md:11](../../../skills/build/SKILL.md#L11) and [skills/fix/SKILL.md:11](../../../skills/fix/SKILL.md#L11), serving the manual-recovery path (not redundant with the hook).
+- **Mechanism:** preamble + lightweight hook. Hook = ~~UserPromptExpansion~~ **`UserPromptSubmit`** (corrected from spike's name during S1 empirical verification — see [ADR-009 §Spike-Doc Correction](../../adrs/ADR-009-plan-mode-detection.md)) reading `permission_mode` from hook stdin (documented value `"plan"`); blocks `/roughly:build` and `/roughly:fix` invocations when plan mode is active. Preamble = updated CRITICAL warning at [skills/build/SKILL.md:11](../../../skills/build/SKILL.md#L11) and [skills/fix/SKILL.md:11](../../../skills/fix/SKILL.md#L11), serving the manual-recovery path (not redundant with the hook).
 - **AC6 belt-and-suspenders justification accepted as structural bypass:** the preamble is bypassed before being read at SessionStart auto-engagement, not read-and-ignored. No preamble improvement closes a gap that exists before the preamble is reached.
-- **ADR-001 distinction (for ADR-009):** ADR-001 rejected hooks that need pipeline-internal stage state (PreToolUse/Stop monitoring Stage 4 completion). The proposed UserPromptExpansion hook reads only harness-owned data (`permission_mode` from stdin) at the invocation gate, before any Stage 1 work — no pipeline-internal coupling. Distinction is technically valid but ADR-009 must sharpen it for per-skill-vs-global hook-registration concerns (see [open questions](#open-questions)).
-- **Line-cap budget reminder:** [skills/build/SKILL.md](../../../skills/build/SKILL.md) is at 296/300 lines, [skills/fix/SKILL.md](../../../skills/fix/SKILL.md) at 299/300. Inline preamble additions cannot exceed 1-4 net lines; per the [line-cap budget contract](#line-cap-budget-contract), shared prose extraction (ADR-003 reference-copy pattern) is the off-ramp. S1 should treat extraction as first-class scope, not a workaround.
+- **ADR-001 distinction (for ADR-009):** ADR-001 rejected hooks that need pipeline-internal stage state (PreToolUse/Stop monitoring Stage 4 completion). The `UserPromptSubmit` hook reads only harness-owned data (`permission_mode` from stdin) at the invocation gate, before any Stage 1 work — no pipeline-internal coupling. Distinction sharpened in [ADR-009 §"Distinction from ADR-001"](../../adrs/ADR-009-plan-mode-detection.md) into two arguments: (1) invocation gate vs mid-pipeline stage gate, (2) harness-owned data vs pipeline-internal data.
+- **Line-cap budget reminder:** [skills/build/SKILL.md](../../../skills/build/SKILL.md) is at 296/300 lines, [skills/fix/SKILL.md](../../../skills/fix/SKILL.md) at 299/300. Substitution-only edit at L11 preserved both counts. No prose extraction needed for S1; the off-ramp remains available for S2/S6/S9/S10.
 
 **Empirical verification (Step 1, gates Step 2):**
 S1 must first verify, in priority order, the empirical gaps surfaced by S0 (see [E03.S0 Empirical gaps](#e03s0-plan-mode-detection-spike)). The load-bearing assumption is that **UserPromptExpansion fires before plan mode's Phase 1–5 workflow** under SessionStart auto-engagement. **If verification falsifies it, S1 STOPS hook implementation and falls back to preamble-only** per the existing fallback AC. ADR-009 records the verification outcome and resulting mechanism choice.
 
 **Acceptance criteria:**
-- [ ] **Step 1 (CRITICAL gate):** Empirical verification of UserPromptExpansion firing under plan mode is performed and documented in ADR-009. If the verification falsifies the assumption, Step 2 is skipped and S1 proceeds with preamble-only.
-- [ ] **Step 2 (CONDITIONAL on Step 1):** UserPromptExpansion hook implemented at `.claude/hooks/<name>.sh`, registered in [skills/setup/templates/settings.json.template](../../../skills/setup/templates/settings.json.template), and templated into user projects on `/roughly:setup`
-- [ ] When `/roughly:build` is invoked while Claude Code's plan mode is active, Stage 1 does not begin until plan mode is exited
-- [ ] When `/roughly:fix` is invoked while Claude Code's plan mode is active, Stage 1 does not begin until plan mode is exited
-- [ ] On detection, the orchestrator either invokes `ExitPlanMode` and continues into Stage 1, or aborts with a one-line redirect message (the choice depends on Step 1 outcome). **Fallback:** if Step 1 is inconclusive, S1 defaults to abort-with-redirect, not ExitPlanMode invocation, because invoking a tool whose semantics are unverified inside a skill body has worse failure modes than aborting
-- [ ] The detection contract is documented in [skills/build/SKILL.md](../../../skills/build/SKILL.md) preamble and synced verbatim to [skills/fix/SKILL.md](../../../skills/fix/SKILL.md) preamble — manual sync (build/fix only, 2-file scope), no automation. Net additions ≤ 1-4 lines per file; if more is needed, extract first per the [line-cap budget contract](#line-cap-budget-contract).
-- [ ] **Hook registration scope decision** recorded in ADR-009: per-skill (matching `build` and `fix` commands) vs global registration. Per-skill is preferred to keep ADR-001's pipeline-internal-coupling concern fully out of scope; global is an alternative if per-skill is not supported by Claude Code's hook system. Decision is binding for ADR-009.
-- [ ] **New ADR-009 (`docs/adrs/ADR-009-plan-mode-detection.md`)** documents: the detection mechanism chosen (preamble-only / preamble+hook / inconclusive), the rationale, empirical verification results from Step 1, the ADR-001 distinction (no pipeline-internal coupling), the hook registration scope decision, the manual-sync targets if preamble-based, and any known edge cases. Status: Accepted
-- [ ] [docs/adrs/README.md](../../../docs/adrs/README.md) updated with ADR-009 entry; CLAUDE.md "8 ADRs" count updated to 9
-- [ ] The plan-mode hijack entry in [.roughly/known-pitfalls.md](../../../.roughly/known-pitfalls.md) Domain-Specific section is updated to reflect the new enforcement path; the silent-failure mode is recategorized as "blocked by S1 enforcement" not "open hole"
-- [ ] **Spike output retention decision** recorded: keep [docs/planning/spikes/plan-mode-detection-findings.md](../spikes/plan-mode-detection-findings.md) as historical reference (recommended — ADR-009 references it) or retire after ADR-009 absorbs conclusions
+- [x] **Step 1 (CRITICAL gate):** Empirical verification of `UserPromptSubmit` firing under plan mode performed 2026-05-02; PASS verdict captured in [ADR-009 §"Step 1 Empirical Verification Result"](../../adrs/ADR-009-plan-mode-detection.md). The empirical run also caught the spike's API-name error (`UserPromptExpansion` → `UserPromptSubmit`).
+- [x] **Step 2 (CONDITIONAL on Step 1):** Hook implemented at [.claude/hooks/plan-mode-gate.sh](../../../.claude/hooks/plan-mode-gate.sh), registered via [skills/setup/templates/settings.json.template](../../../skills/setup/templates/settings.json.template), copied verbatim to [skills/setup/templates/plan-mode-gate.sh.template](../../../skills/setup/templates/plan-mode-gate.sh.template), templated into user projects by `/roughly:setup` Step 5d (three-branch registration with jq/JSON preflights and warning escalation).
+- [x] When `/roughly:build` is invoked while Claude Code's plan mode is active, Stage 1 does not begin until plan mode is exited — verified empirically.
+- [x] When `/roughly:fix` is invoked while Claude Code's plan mode is active, Stage 1 does not begin until plan mode is exited — verified by parity (L11 sync; identical regex `^/roughly:(build|fix)`); not separately runtime-tested.
+- [x] On detection, the hook aborts with one-line redirect (`decision: "block"` JSON with `Shift+Tab` recovery instruction). `ExitPlanMode` invocation deferred per fallback AC; remaining empirical gaps (interactive semantics, ignored-vs-exit) listed in [ADR-009 §Open Items](../../adrs/ADR-009-plan-mode-detection.md).
+- [x] Detection contract documented in [skills/build/SKILL.md:11](../../../skills/build/SKILL.md#L11) and synced verbatim to [skills/fix/SKILL.md:11](../../../skills/fix/SKILL.md#L11) — substitution-only; line counts preserved at 296 and 299.
+- [x] **Hook registration scope decision:** per-skill scoping done in-script via `prompt`-field regex matching, since Claude Code's hook `matcher` field is tool-name only and does not support slash-command matching. Recorded in [ADR-009 §"Hook Registration Scope"](../../adrs/ADR-009-plan-mode-detection.md). Resolves [open question 5](#open-questions).
+- [x] **ADR-009 (`docs/adrs/ADR-009-plan-mode-detection.md`)** authored with Context, Decision, Step 1 Empirical Verification Result, Spike-Doc Correction, Distinction from ADR-001, Hook Registration Scope, Hook Posture (fail-closed), Open Items. Status: Accepted.
+- [x] [docs/adrs/README.md](../../../docs/adrs/README.md) updated with "Current ADRs" list; [CLAUDE.md](../../../CLAUDE.md) ADR count updated to "ADR-001 through ADR-009"; ADR-009 row added to Key Design Decisions table.
+- [x] Plan-mode hijack entry in [.roughly/known-pitfalls.md](../../../.roughly/known-pitfalls.md) Domain-Specific section rewritten as "blocked by S1 enforcement (ADR-009)" with recovery instructions and existing-`UserPromptSubmit`-entry caveat for re-runs.
+- [x] **Spike output retention decision:** keep [docs/planning/spikes/plan-mode-detection-findings.md](../spikes/plan-mode-detection-findings.md) as historical reference; ADR-009 §Spike-Doc Correction is the authoritative correction record.
 
-**Verification:**
-- Step 1 verification: dogfood UserPromptExpansion under plan mode in an isolated session (paired with the spike if practical, or a fresh session if not) and record the result in ADR-009
-- Manual dogfood: invoke `/roughly:build` from a session where plan mode is active before the command runs; confirm Stage 1 does not enter without an exit step
-- Manual dogfood: same test for `/roughly:fix`
-- CI dogfood (post-S11): scripted scenario asserts the abort/exit behavior under plan mode
-- Re-read `.roughly/known-pitfalls.md` entry to confirm the rewrite is accurate
+**Verification (delivered):**
+- 11 hook smoke tests pass: build/fix in plan = block; default = pass; non-roughly + plan = pass; empty prompt = pass; empty stdin = block (fail-closed); malformed JSON with roughly+plan = block via grep fallback; `/roughly:building` typo + plan = pass (tightened match); `printf` fallback emits block when no `jq`/`python3`
+- `verify-all.sh` (project Stop hook): exit 0, no drift, all skill caps under 300
+- `cubic review --json`: `{"issues": []}` on final commit
+- 2 review cycles run; all blockers/concerns from cycle 1 closed in cycle 2
+- 4 post-merge cubic findings caught and fixed before push (PostToolUse schema, harness Step 4 event name, plan-doc references, Branch 3 ambiguity, `$FILE_PATH` quoting, no-stdin fail-open)
+
+**Deviations from plan:**
+- **API name correction.** Plan referenced `UserPromptExpansion` throughout. Plan body preserved as historical record; post-execution note added at top pointing to ADR-009.
+- **Per-skill scoping mechanism.** Plan hypothesised matcher-field scoping. Empirical research confirmed `matcher` is tool-name only. Scoping moved into the hook script via `prompt`-field regex — cleaner than the plan's fallback.
+- **Step 5d Branch 3 preflights.** Added `jq`-availability + `jq` empty-JSON-validity checks in response to silent-failure-hunter cycle 1; both surface blocking warnings in Step 7 if they fail.
+- **PostToolUse template format fix.** Outside S1's scope but shipped here because S1's `UserPromptSubmit` addition made the asymmetry visible. Without this fix, S1 would have shipped a working plan-mode hook alongside a broken formatter hook on user installs.
+
+**Constraints inherited by future stories:**
+- **E03.S2 (Stop-hook-v1)** must extend Step 5d additively. The horizontal-rule break + `<!-- Future S2 additions -->` marker is in place. Step 5d is now structured: unconditional hook copy → 3 branches for `UserPromptSubmit` registration → S2 inserts a fourth sub-step here for Stop-hook registration.
+- **Hook installation surface.** [.claude/hooks/plan-mode-gate.sh](../../../.claude/hooks/plan-mode-gate.sh) is the canonical source; [skills/setup/templates/plan-mode-gate.sh.template](../../../skills/setup/templates/plan-mode-gate.sh.template) is its verbatim copy. Any change to the canonical must re-cp to the template, or templating drifts. Manual sync — no automation. (Candidate for the verify-all.sh drift checker; tracked in [v0.1.6 candidates](#v016-candidates).)
+- **Hook posture.** Any future hook-script work in this codebase should follow the "fail-closed under uncertainty" pattern (no `set -e`, parser-tool guards, explicit fail-closed branches). Pitfall captured in [.roughly/known-pitfalls.md](../../../.roughly/known-pitfalls.md).
 
 **Dependencies:** S0 (mechanism conclusion — complete).
 
@@ -708,7 +733,7 @@ These are surfaced in story bodies but consolidated here for the implementer's c
 
 4. ~~**roughly.dev source location (S12).**~~ **Resolved by S12.0** — the docs cluster is gated on a ½-day decision story that picks one of (a) in-repo `docs/site/`, (b) separate repo, or (c) defer docs from v0.1.5 DoD. See [E03.S12.0](#e03s120-resolve-roughlydev-source-location).
 
-5. **Hook registration scope (S1 / ADR-009).** Per-skill registration (matching `build` and `fix` commands) vs global registration of the UserPromptExpansion hook. Per-skill is preferred to keep ADR-001's pipeline-internal-coupling concern fully out of scope. Decision needed in S1; binding for ADR-009.
+5. ~~**Hook registration scope (S1 / ADR-009).**~~ **Resolved by S1 (2026-05-02).** Claude Code's hook `matcher` field is tool-name only — it does not support slash-command matching. Per-skill scoping is therefore done in-script via `prompt`-field regex (`^/roughly:(build|fix)`), not via `matcher`. Recorded in [ADR-009 §"Hook Registration Scope"](../../adrs/ADR-009-plan-mode-detection.md). The "per-skill vs global" framing was a false dichotomy — the hook is registered once globally on `UserPromptSubmit`, and scoping is the script's responsibility.
 
 6. **AC2 retroactive convention change (epic-level).** The S0 wrap-up captured a planning pitfall: "Confirmed empirically" ACs in spike stories can be unachievable from inside an active pipeline session. The pitfall recommends an epic-level convention change for future spike ACs. Two options:
    - **(a) One-off documented gap** — leave AC2's text as written, accept the partial mark, treat the pitfall as guidance for future spike-AC writing only. **Recommended** — keeps the historical record honest and avoids retroactive AC mutation.
@@ -723,7 +748,12 @@ Items surfaced during epic writing that are clearly related to v0.1.5 work but e
 
 - **In-session maturity offers at Stage 1 (former S7).** Originally scoped for v0.1.5 to evaluate `investigator-v1` and `stop-hook-v1` triggers up-front, before the user has invested effort in the build/fix run. Moved to v0.1.6 because: (a) line-cap budget on build/fix is tight, (b) the "users are tired by Stage 8" premise is unmeasured, (c) Stage-1 acceptance changes the semantics of `.roughly/workflow-upgrades` (records can persist for runs that subsequently abort). Revisit with v0.1.5 dogfood data on Stage 8 acceptance/decline rates.
 - **Marker-aware resume improvements in [skills/upgrade/SKILL.md](../../skills/upgrade/SKILL.md)** — surfaced while scoping S4. Today's `/roughly:upgrade` migration logic handles `.ruckus/.migration-in-progress` markers, but there's room to make resume reporting cleaner (which steps already ran, which still need to). Not blocking v0.1.5 since the marker mechanism is correct as-is.
-- **Expanded plan-mode signals if S0 spike reveals additional gaps** — if S0 finds the preamble-only mechanism leaves a known hole, additional defense (Stop-hook check, etc.) is a v0.1.6 candidate rather than v0.1.5 scope expansion.
+- ~~**Expanded plan-mode signals if S0 spike reveals additional gaps**~~ **Subsumed by S1 outcomes:** the spike concluded preamble + hook (no preamble-only known holes); residual S1 deferred items below absorb the remaining surface.
+- **ExitPlanMode interactive semantics empirical test (S1 deferral).** Recorded as Open Items in [ADR-009](../../adrs/ADR-009-plan-mode-detection.md). Not load-bearing for S1's abort-with-redirect path; would matter only if a future story wants in-skill self-recovery (calling `ExitPlanMode` from the orchestrator instead of asking the user to exit manually).
+- **Hook-event suppression audit under plan mode for non-`UserPromptSubmit` events (S1 deferral).** Informational — full audit of which hook events fire, in what order, with what stdin payloads, when plan mode is active. Useful for any future story that wants a different hook event for a different gating concern.
+- **Formatter+existing-`settings.json` merge behavior (S1 deferral).** S1's Step 5d Branch 3 disambiguates "no formatter provided AND existing settings.json" — formatter+existing case currently routes to Branch 1 (overwrite). Promoting formatter+existing to a 4th merge-style branch is a follow-up.
+- **Per-client plan-mode toggle mapping (S1 deferral).** Preamble and hook reason text mention "Shift+Tab in terminal, or your client's plan-mode toggle" but no per-client mapping is documented. Ergonomics polish.
+- **Drift checker for the canonical-vs-template hook pair.** [.claude/hooks/plan-mode-gate.sh](../../../.claude/hooks/plan-mode-gate.sh) and [skills/setup/templates/plan-mode-gate.sh.template](../../../skills/setup/templates/plan-mode-gate.sh.template) are kept in sync manually; a `verify-all.sh` check would catch drift. Pairs naturally with the pre-flight wording drift detection candidate below.
 - **Per-field maturity-check organization beyond v1 IDs** — S3's retirement raises the question of whether the existing v1 IDs are themselves the right grain. Deferred.
 - **Manual-edit detection for `.roughly/known-pitfalls.md`** (relates to open question 2) — pushing organize-suggestion logic into the Stop hook so manual edits are caught.
 - **CI coverage for `/roughly:fix`, `/roughly:setup`, `/roughly:upgrade`** (S11b-2 is happy-path build only). Per-command CI scenarios.
@@ -739,9 +769,9 @@ Order is by dependency, not roadmap item number.
 
 | # | Story | Why this position |
 |---|---|---|
-| 1 | **E03.S0** (plan-mode spike) ✅ | ½-day investigation; gates S1. Complete on `feat/S03.0-plan-mode-detection-spike` 2026-05-01; PR pending. Conclusion: preamble + lightweight hook (UserPromptExpansion `permission_mode`). |
+| 1 | **E03.S0** (plan-mode spike) ✅ | ½-day investigation; gated S1. Merged 2026-05-01 via PR #24 (`e5d630f`). Conclusion: preamble + lightweight hook (`UserPromptSubmit` `permission_mode`; spike's API name corrected during S1). |
 | 2 | **E03.S11a** (CI scaffolding) | Lands ahead of S1 — scaffolding script is a stub at the `claude` invocation point until S11b-1, so doesn't depend on plan-mode detection |
-| 3 | **E03.S1** (plan-mode auto-detect/exit) | Highest-value item; unblocks safe CI dogfood runs |
+| 3 | **E03.S1** (plan-mode auto-detect/exit) ✅ | Highest-value item; unblocks safe CI dogfood runs. Merged 2026-05-02 via PR #25 (`c598ef6`) with follow-up fixes through 2026-05-03. ADR-009 authoritative. |
 | 4 | **E03.S11b-1** (CLI plumbing smoke test) | Proves auth + CLI plumbing in CI before subsequent prose-touching stories land |
 | 5 | **E03.S12.0** (resolve roughly.dev source location) | Gates S12a/S12b; ½-day decision |
 | 6 | **E03.S6** (plan-format version field) | Additive, low-risk; lands next so v0.2.0 work can begin parallel |
