@@ -1,0 +1,25 @@
+docs/plans/E03-S1-plan-mode-auto-detect-plan.md
+  dbb1c96f0621d848 7-8
+skills/setup/SKILL.md
+  dbb1c96f0621d848 142-144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.3.4",
+  "base_commit_sha": "a299adafa08939884cd08fafbf0c61c9d37f8cd0",
+  "prompts": {
+    "dbb1c96f0621d848": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1f3c5002-7a41-4819-a989-25167293042d",
+        "model": "claude-opus-4-7"
+      },
+      "human_author": "Nick Kirkes",
+      "messages": [],
+      "total_additions": 5,
+      "total_deletions": 1,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    }
+  }
+}
