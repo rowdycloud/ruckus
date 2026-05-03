@@ -13,9 +13,15 @@ set -uo pipefail
 
 stdin_json="$(cat 2>/dev/null || true)"
 
-# No stdin at all — script invoked outside the hook context (manual exec, test
-# without pipe). Pass through silently; the harness is not actually gating us.
+# No stdin at all — fail closed. We have zero information: cannot tell whether
+# the prompt is a roughly invocation, cannot tell whether plan mode is active.
+# Emitting a block JSON here makes any silent harness-payload-drop visible to
+# the user (they see the block message and investigate) instead of letting
+# the gate silently open. Direct manual invocations (debug/testing) will see
+# this output too — acceptable cost for the safety guarantee.
 if [ -z "$stdin_json" ]; then
+  reason="Roughly plan-mode-gate received empty stdin — failing closed. If you are running this manually, pipe a JSON payload via stdin. If this fired during a real Claude Code session, your hook harness may be dropping payloads — investigate before disabling."
+  printf '{"decision":"block","reason":"%s"}\n' "$reason"
   exit 0
 fi
 

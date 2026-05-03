@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "{{FORMATTER_COMMAND}} $FILE_PATH"
+            "command": "{{FORMATTER_COMMAND}} \"$FILE_PATH\""
           }
         ]
       }
