@@ -139,7 +139,9 @@ Write a minimal `.claude/settings.json` that registers the plan-mode-gate hook:
 }
 ```
 
-**Branch 3 — `.claude/settings.json` already exists:**
+**Branch 3 — no formatter provided AND `.claude/settings.json` already exists:**
+(When formatter IS provided, Branch 1 wins regardless of whether settings.json exists — Branch 1 overwrites with the template. This is the pre-S1 behavior, preserved for backwards compatibility. Users with both a formatter and customizations in settings.json should run setup once without a formatter, then add their formatter manually.)
+
 First check whether `jq` is available (`command -v jq`). If `jq` is unavailable, halt this branch and surface a blocking-warning in Step 7 summary: `WARNING: jq not installed — could not register plan-mode-gate hook in existing .claude/settings.json. Install jq and re-run /roughly:setup, or manually add a UserPromptSubmit entry pointing at .claude/hooks/plan-mode-gate.sh.` (Skip the merge below.)
 
 If `jq` is available, validate the existing file parses cleanly first: `jq empty .claude/settings.json`. If parse fails, halt this branch and surface: `WARNING: existing .claude/settings.json is invalid JSON — plan-mode-gate not registered. Fix the file and re-run /roughly:setup.` (Skip the merge.)

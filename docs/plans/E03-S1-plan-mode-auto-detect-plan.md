@@ -4,6 +4,8 @@
 **Spike findings (input):** [docs/planning/spikes/plan-mode-detection-findings.md](../planning/spikes/plan-mode-detection-findings.md)
 **Branch:** `feat/S03.1-plan-mode-auto-detect`
 
+> **Post-execution note (2026-05-03):** all references to `UserPromptExpansion` below are inherited from the spike findings doc and were corrected to `UserPromptSubmit` during S1's empirical verification on 2026-05-02. Treat any `UserPromptExpansion` mention here as historical context — see [docs/adrs/ADR-009-plan-mode-detection.md](../adrs/ADR-009-plan-mode-detection.md) "Spike-Doc Correction" section for the authoritative event name and rationale. The plan is preserved as-written for the historical record per AC10's spike-output retention decision.
+
 ## Locked-in defaults (confirmed by user before plan was written)
 
 1. **Step 1 verification execution:** human-performed in a parallel Claude Code session; result reported back to the orchestrator at the mid-Stage-5 gate (between T1 and T2).
