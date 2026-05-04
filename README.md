@@ -218,8 +218,8 @@ Roughly adapts to your project's size, detected by source file count during setu
 | Level | Source Files | What changes |
 | ----- | ----------- | ----------- |
 | Greenfield | <10 | `verify-all` runs build only (skips test/typecheck if not configured). No investigator agent created. No Stop hook offered. |
-| Scaffolded | 10-50 | Standard configuration. All verification checks active if commands were provided during setup. Doc-writer agent runs at wrap-up. |
-| Established | 50+ | Setup offers to create investigator agent immediately. Stop hook offered when verify-all has 2+ meaningful checks. `pitfalls-organized` check activates when known-pitfalls.md exceeds 80 lines. |
+| Scaffolded | 10-50 | Standard configuration. All verification checks active if commands were provided during setup. Doc-writer agent runs at wrap-up when the user confirms new pitfalls or conventions; if it then writes to `.roughly/known-pitfalls.md` and the file exceeds 80 lines, it suggests reorganization. |
+| Established | 50+ | Setup offers to create investigator agent immediately. Stop hook offered when verify-all has 2+ meaningful checks. |
 
 ## Upgrade Checks
 
@@ -228,9 +228,7 @@ Roughly checks for upgrade opportunities at the end of every build/fix run:
 | Check ID | Trigger | Offers |
 | -------- | ------- | ------ |
 | `investigator-v1` | 50+ source files, no investigator agent | Create investigator agent |
-| `test-verify-v1` | Test config exists, verify-all test step is placeholder | Add test execution |
 | `stop-hook-v1` | verify-all has 2+ meaningful checks, no Stop hook | Add Stop hook |
-| `pitfalls-organized-v1` | known-pitfalls.md > 80 lines | Deduplicate and organize |
 
 Check IDs are versioned. When a plugin update improves a check, the version bumps and previously-declined checks are re-offered with an explanation of what changed.
 

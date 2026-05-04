@@ -52,7 +52,7 @@ PM handoff: detail level sufficient for an epic-writing agent to expand into sto
 ### Trust hardening
 1. **Plan-mode auto-detect/exit at Stage 1 of build/fix.** Without this, ADR-001 is unenforced.
 2. **Finish stop-hook-v1 maturity check** integration into `/roughly:upgrade`.
-3. **Retire test-verify-v1 and pitfalls-organized-v1.** Fold triggers into known-pitfalls writes.
+3. **Retire test-verify-v1 and pitfalls-organized-v1.** ✅ Done — triggers folded into doc-writer's known-pitfalls write path (E03.S3).
 4. **Pre-flight migration check in remaining 2 skills** (currently 6/9, upgrade excluded by design).
 5. **Document Edit `replace_all` dual-semantic-token failure** in CONTRIBUTING.md. Prose-only.
 6. **Plan-format version field.** Added now, read in v0.2.0.

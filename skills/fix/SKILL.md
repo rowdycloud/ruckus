@@ -235,7 +235,7 @@ Compact context before wrap-up. Preserve: issue summary with root cause, files c
    ```
 3. Show commit for approval. Commit but do NOT push.
 4. Run maturity checks (see below).
-5. Ask: "Did this fix reveal any new pitfalls for `.roughly/known-pitfalls.md`?" If yes, dispatch `doc-writer` agent.
+5. Ask: "Did this fix reveal any new pitfalls or conventions for `.roughly/known-pitfalls.md`?" If yes, dispatch `doc-writer` agent.
 
 ---
 
@@ -259,14 +259,6 @@ Continue with whatever the human provides — not a hard block, but a visible ga
 If no `investigator-v1-added` in `.roughly/workflow-upgrades` AND source file count > 50 AND not declined:
 > "This project has [N] source files but the investigator agent isn't enabled. It improves bug diagnosis for `/roughly:fix`. Enable it? (yes / not yet / never)"
 If yes: record `investigator-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
-
-**Check: pitfalls-organized-v1:**
-If `.roughly/known-pitfalls.md` > 80 lines AND no `pitfalls-organized-v1` within last 30 days:
-> "known-pitfalls.md has grown to [N] lines. Deduplicate and organize?"
-
-**Check: test-verify-v1:**
-If test config exists AND verify-all test step is placeholder AND not declined:
-> "A test suite is configured. Add test execution to verify-all?"
 
 **Check: stop-hook-v1:**
 If `.claude/settings.json` has no `Stop` hook AND verify-all has 2+ meaningful checks AND not declined:

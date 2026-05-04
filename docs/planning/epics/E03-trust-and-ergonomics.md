@@ -1,6 +1,6 @@
 # E03 — Trust hardening + ergonomics + CI
 
-**Status:** In Progress (2/16 stories complete — E03.S0 spike merged 2026-05-01 via PR #24 (`e5d630f`); E03.S1 implementation merged 2026-05-02 via PR #25 (`c598ef6`) with follow-up fixes `5b09864`, `a299ada`, `6d268e9`, `2c1436b` through 2026-05-03. Mechanism: preamble + `UserPromptSubmit` hook reading `permission_mode` from stdin. Spike-doc API name correction `UserPromptExpansion` → `UserPromptSubmit` recorded in ADR-009 §Spike-Doc Correction.)
+**Status:** In Progress (3/16 stories complete — E03.S0 spike merged 2026-05-01 via PR #24 (`e5d630f`); E03.S1 implementation merged 2026-05-02 via PR #25 (`c598ef6`) with follow-up fixes `5b09864`, `a299ada`, `6d268e9`, `2c1436b` through 2026-05-03; E03.S3 retirement merged 2026-05-04 on `feat/S03.3-retire-test-verify-v1` (8 commits, `33bf966` core + 7 follow-up). Mechanism: preamble + `UserPromptSubmit` hook reading `permission_mode` from stdin. Spike-doc API name correction `UserPromptExpansion` → `UserPromptSubmit` recorded in ADR-009 §Spike-Doc Correction. Maturity-check loop reduced from 5 → 3 active checks; coverage-loss gate documented in agents/doc-writer.md.)
 **Target version:** v0.1.5
 **Target effort:** 6-7 wk
 **Dependencies:** E01 (pipeline foundation, audit follow-up shipped v0.1.3); E02 (rename to `roughly` shipped v0.1.4 — namespace, dotdir, version-line identifier all assumed in place)
@@ -34,6 +34,8 @@ Scope is frozen. Items surfaced during epic writing that are clearly related but
 5. **Stop-hook-v1 templating completion (S2).** This repo's [.claude/hooks/verify-all.sh](.claude/hooks/verify-all.sh) is a dogfood instance with project-specific drift checks (line caps for `agents/`, `.ruckus/` legacy detection, etc.) — it is not a plugin-shipped template. The maturity check must template a generic Stop hook into the user's `.claude/`, handling the case where the user already has a Stop hook configured (merge vs prompt vs decline). Risk: under-spec'd templating ships a hook that conflicts with an existing user hook; mitigated by explicit conflict-handling AC in S2.
 
 6. **Skill line-cap ceiling.** [skills/build/SKILL.md](../../skills/build/SKILL.md) is at 296/300 lines, [skills/fix/SKILL.md](../../skills/fix/SKILL.md) at 299/300. The cap is enforced by [.claude/hooks/verify-all.sh:25](../../.claude/hooks/verify-all.sh#L25). S1, S2, S6, S9, and S10 all add lines to these two files; S3 retires two maturity-check blocks for net negative, but the residual headroom is thin. Risk: a story lands and pushes the file past 300, breaking the dogfood Stop hook; mitigated by the line-cap budget contract below.
+
+   **Status update (2026-05-04, post-S3):** Risk substantially reduced. S1 was substitution-only (L11; counts preserved at 296/299). S3 deleted two maturity-check blocks: build is now 288/300 (12 lines headroom) and fix 291/300 (9 lines). Remaining additive stories (S2, S6, S9, S10) have meaningful room to operate without invoking the budget contract's prose-extraction off-ramp. Risk does not close — additive cumulative pressure from 4 more stories could still force extraction — but is no longer immediate.
 
 7. **CI cost.** A full `/roughly:build` cycle in CI invokes Sonnet for orchestration, investigator, plan-reviewer, three parallel review agents, spec-reviewer per task, and code-reviewer at Stage 6. A single happy-path run is plausibly 100K+ Sonnet tokens; at ~100 PR pushes per release cycle, this is non-trivial spend. Risk: CI becomes a hidden release-cost driver; mitigated by S11b-2's minimal-task fixture and explicit token-budget AC.
 
@@ -226,12 +228,23 @@ The Stop hook fires after **every** Claude turn — re-running test/build/full-v
 #### E03.S3: Retire test-verify-v1 and pitfalls-organized-v1
 
 **Maps to roadmap item:** #3
+**Status:** Complete on `feat/S03.3-retire-test-verify-v1`; merged 2026-05-04 (8 commits — `33bf966` core retirement; `9440ecb` 2 wrap-up pitfalls; `0d45ea3` README L221 trigger description correction; `203f757` plan verification spec; `eb32f7c` plan T2 wc→Read + ADR-005 disposition count; `023412d` plan final-sweep grep breadth; `af6e84a` plan T2 tools list; `9078a5f` `fix/SKILL.md` Stage 8 wrap-up harmonization). All 6 ACs met. **Coverage-loss gate** (the question raised in [open questions](#open-questions)) accepted as documented in [agents/doc-writer.md](../../../agents/doc-writer.md) and [README.md:221](../../../README.md#L221) — manual edits to `.roughly/known-pitfalls.md` are explicitly out of the new trigger surface; suggestion fires only when (a) the user confirms new pitfalls/conventions at wrap-up AND (b) doc-writer actually writes to the file.
 
-**Files touched:**
-- [skills/build/SKILL.md:260-269](../../skills/build/SKILL.md#L260-L269) — remove `pitfalls-organized-v1` and `test-verify-v1` blocks
-- [skills/fix/SKILL.md:263-271](../../skills/fix/SKILL.md#L263-L271) — same
-- [agents/doc-writer.md](../../agents/doc-writer.md) — fold trigger logic into known-pitfalls write path
-- [docs/adrs/ADR-005-versioned-maturity-checks.md](../../docs/adrs/ADR-005-versioned-maturity-checks.md) — footnote noting retirement (not a new ADR)
+**Files delivered:**
+
+Modified:
+- [skills/build/SKILL.md](../../../skills/build/SKILL.md) — 297 → 288 lines (deleted 2 retired-check blocks)
+- [skills/fix/SKILL.md](../../../skills/fix/SKILL.md) — 300 → 291 lines (same deletion + post-review wrap-up harmonization in `9078a5f` to ask about conventions, matching build)
+- [agents/doc-writer.md](../../../agents/doc-writer.md) — 291 → 467 words (new Process step 5: conditional post-write suggestions for organize-on-overflow and verify-all test-integration; explicit failure handling for missing CLAUDE.md, Read failure, multi-file invocations)
+- [docs/adrs/ADR-005-versioned-maturity-checks.md](../../adrs/ADR-005-versioned-maturity-checks.md) — v0.1.5 retirement footnote + Consequences/Negative bullet acknowledging retirement disposition (formal fourth disposition alongside add/decline/version-bump)
+- [README.md](../../../README.md) — removed 2 rows from upgrade-checks table; moved doc-writer reorganization mention from Established to Scaffolded tier; corrected L221 trigger description to two-part gate
+- [docs/ROADMAP.md](../../ROADMAP.md) — item 3 marked complete
+
+New:
+- `docs/plans/E03-S3-retire-maturity-checks-plan.md` — 5-task plan, retained as artifact
+- 2 new pitfalls in [.roughly/known-pitfalls.md](../../../.roughly/known-pitfalls.md) (commit `9440ecb`):
+  - LLM agent conditionals need explicit failure-handling clauses
+  - Pre-existing markdown lint warnings on `PostToolUse:Edit` hooks are unrelated to changed lines
 
 **Context:**
 
@@ -240,17 +253,28 @@ These two checks fire at Stage 8 wrap-up of every build/fix run. `pitfalls-organ
 Retiring them from the maturity-check loop simplifies wrap-up, removes nag patterns, and centralizes pitfall hygiene. The risk is coverage loss: doc-writer fires only on pipeline-driven writes, not on manual edits to `.roughly/known-pitfalls.md`. See [open questions](#open-questions).
 
 **Acceptance criteria:**
-- [ ] `pitfalls-organized-v1` and `test-verify-v1` blocks removed from [skills/build/SKILL.md](../../skills/build/SKILL.md) and [skills/fix/SKILL.md](../../skills/fix/SKILL.md) maturity check sections
-- [ ] [agents/doc-writer.md](../../agents/doc-writer.md) gains an organize-suggestion step: when about to write to known-pitfalls.md, if the post-write file would exceed 80 lines, append a one-line note suggesting reorganization
-- [ ] [agents/doc-writer.md](../../agents/doc-writer.md) gains a verify-all test integration suggestion: when test config is detected (presence of `package.json` test script, `pytest.ini`, etc.) and the verify-all test command is a placeholder per CLAUDE.md, append a one-line note suggesting adding the test step
-- [ ] [docs/adrs/ADR-005-versioned-maturity-checks.md](../../docs/adrs/ADR-005-versioned-maturity-checks.md) gains a footnote noting `pitfalls-organized-v1` and `test-verify-v1` were retired in v0.1.5 (formal retirement, not a version bump per the ADR's reasoning)
-- [ ] Existing entries in `.roughly/workflow-upgrades` for these check IDs are not auto-cleaned (they remain as historical record)
-- [ ] No skill body grows past 300 lines as a result of changes (verify per CLAUDE.md cap)
+- [x] `pitfalls-organized-v1` and `test-verify-v1` blocks removed from [skills/build/SKILL.md](../../../skills/build/SKILL.md) and [skills/fix/SKILL.md](../../../skills/fix/SKILL.md) maturity check sections
+- [x] [agents/doc-writer.md](../../../agents/doc-writer.md) gains an organize-suggestion step: post-write, conditional on `wc -l > 80`, return-summary only (no second write). Test-integration suggestion covers `package.json`/`pytest`/`vitest`/`jest`/`pyproject.toml`. Includes explicit failure-handling clauses for missing CLAUDE.md, Read failure, multi-file invocations.
+- [x] [agents/doc-writer.md](../../../agents/doc-writer.md) gains a verify-all test integration suggestion (covered by step 5 above)
+- [x] [docs/adrs/ADR-005-versioned-maturity-checks.md](../../adrs/ADR-005-versioned-maturity-checks.md) v0.1.5 retirement footnote + Consequences/Negative bullet — retirement is now a documented fourth disposition in ADR-005, alongside add/decline/version-bump.
+- [x] Existing `*-declined` entries in `.roughly/workflow-upgrades` are NOT auto-cleaned (verified inert by silent-failure-hunter at Stage 6)
+- [x] No skill body exceeds 300 lines — build 288, fix 291; ample headroom for downstream stories
 
-**Verification:**
-- Dogfood `/roughly:build` on a project where known-pitfalls.md is 85 lines; confirm doc-writer's note appears in the wrap-up summary, NOT a Stage 8 maturity-check prompt
-- Dogfood `/roughly:fix` on a project with `package.json` test script and placeholder verify-all test step; confirm doc-writer's suggestion appears
-- `wc -l skills/build/SKILL.md skills/fix/SKILL.md` ≤ 300 each
+**Verification (delivered):**
+- Stage 4 plan review: PASS (1 iteration)
+- Stage 6 review (code/static/silent-failure in parallel): 6 findings → 3 critical auto-fixed in 1 review-fix cycle → PASS on re-review
+- Stage 7 dogfood verify-all hook: silent (exit 0); all line/word caps met
+- Cubic review on PR feedback: clean after each iteration (5 review cycles total post-merge-of-feature-commit)
+- Build/fix line counts confirmed: 288 and 291
+
+**Bonus scope (added at Stage 1 intake by user request, beyond epic file list):**
+- [README.md](../../../README.md) upgrade-checks table cleanup + L221 tier-prose correction
+- [docs/ROADMAP.md](../../ROADMAP.md) item 3 marked complete
+
+**Behavior changes worth flagging to downstream stories:**
+- `/roughly:fix` wrap-up scope expanded (commit `9078a5f`): now asks about pitfalls AND conventions, matching `/roughly:build`. Was an oversight asymmetry; harmonized post-PR-review.
+- Stage 8 maturity-check loop is now leaner (5 → 3 active checks: CLAUDE.md quality, `investigator-v1`, `stop-hook-v1`).
+- Retirement is now a documented fourth disposition in ADR-005, alongside add/decline/version-bump. Future stories that retire checks should follow the same pattern (footnote + Consequences/Negative bullet).
 
 **Dependencies:** None blocking; sequenced before S2 to avoid double-touching maturity check sections.
 
@@ -258,6 +282,7 @@ Retiring them from the maturity-check loop simplifies wrap-up, removes nag patte
 - Bumping `investigator-v1` or `stop-hook-v1` versions
 - Adding new maturity checks to replace these
 - Cleaning up historical `pitfalls-organized-v1-declined` entries from existing user `.roughly/workflow-upgrades` files
+- Manual-edit detection for `.roughly/known-pitfalls.md` — coverage gap acknowledged and documented in agents/doc-writer.md and README.md L221; tracked as v0.1.6 candidate
 
 ---
 
@@ -721,7 +746,7 @@ These are surfaced in story bodies but consolidated here for the implementer's c
    - **(c) Mock-mode flag in build skill** — `/roughly:build --ci` shortcuts review-plan with a synthetic PASS verdict
    - Each has trade-offs: (a) most realistic but brittle to skill prompt changes; (b) clean but requires skill modification; (c) cleanest but skill modification is more invasive. Decision needed before S11b-2 implementation; S11b-1 (CLI smoke test) does not depend on this resolution.
 
-2. **Maturity check replacement coverage (S3).** Doc-writer fires on pipeline-driven writes only. Manual edits to `.roughly/known-pitfalls.md` (user opening it in their editor) won't trigger the organize-suggestion. Acceptable coverage loss for v0.1.5, or push triggers into `.claude/hooks/verify-all.sh` (Stop hook from S2) so manual edits are caught at next session boundary?
+2. ~~**Maturity check replacement coverage (S3).**~~ **Resolved by S3 (2026-05-04):** acceptable coverage loss accepted. Doc-writer's post-write suggestions fire only when (a) the user confirms new pitfalls/conventions at wrap-up AND (b) the agent actually writes to `.roughly/known-pitfalls.md`. Manual edits are explicitly out of the new trigger surface. Two-part gate documented in [agents/doc-writer.md](../../../agents/doc-writer.md) and [README.md:221](../../../README.md#L221). Manual-edit detection remains a [v0.1.6 candidate](#v016-candidates) if real-world usage shows the gap matters.
 
 3. **Retry-loop per-cap decisions (S10).** Each of the four caps may stay, raise, or convert to prompt. **Proposed defaults (challenge these before S10 lands):**
    - **Stage 5c questions cap:** keep at 2. Questions interrupt a fresh subagent — raising the cap risks runaway clarification loops on under-specified plans. Better to surface plan ambiguity at S0/Stage 4 review.
@@ -760,6 +785,9 @@ Items surfaced during epic writing that are clearly related to v0.1.5 work but e
 - **Negative-path CI scenarios** (review-plan NEEDS REVISION, Stage 6 max cycles, abort recovery).
 - **Pre-flight wording drift detection in `.claude/hooks/verify-all.sh`** — surfaced in S4. Today's hook checks line caps and HTML comment integrity but not skill-prose uniformity. A drift check for the pre-flight migration block (8 skills must have identical wording) would catch silent regressions.
 - **Refactor build/fix preamble + Stage 1 + Stage 8 prose into a shared reference** — surfaced by the line-cap budget contract. If the contract's "extract before adding" off-ramp gets used during v0.1.5, this becomes a real refactor; if it doesn't, it's still a debt to retire when the next big additive story lands.
+- **Pre-existing typo `docs/adr/` (singular) at [agents/doc-writer.md:24](../../../agents/doc-writer.md#L24)** — flagged by code-reviewer during S3, predates S3 (origin commit `6b05dcd` in S02.3). One-line fix; slot into the next doc-cleanup story.
+- **Pre-existing markdown lint sweep across `docs/ROADMAP.md`, `docs/planning/epics/*`, `agents/doc-writer.md`** — captured as a pitfall pattern during S3 (commit `9440ecb`); not auto-fixed since lint warnings are unrelated to changed lines. Candidate for a one-shot lint-cleanup story when convenient.
+- **ADR-005 footnote terminology drift** — cosmetic vocabulary mismatch between user-response (`add`/`decline`) and plugin-action (`version-bump`) terminology in the v0.1.5 retirement footnote. Code-reviewer flagged as low-confidence cosmetic; left as-is for S3 but worth tightening when ADR-005 next gets edited.
 
 ---
 
@@ -777,7 +805,7 @@ Order is by dependency, not roadmap item number.
 | 6 | **E03.S6** (plan-format version field) | Additive, low-risk; lands next so v0.2.0 work can begin parallel |
 | 7 | **E03.S5** (CONTRIBUTING prose) | Independent, prose-only; slot anywhere |
 | 8 | **E03.S4** (pre-flight in audit-epic + verify-all) | Independent of pipeline changes |
-| 9 | **E03.S3** (retire test-verify-v1 / pitfalls-organized-v1) | Folds triggers into doc-writer; doesn't break anything |
+| 9 | **E03.S3** (retire test-verify-v1 / pitfalls-organized-v1) ✅ | Folds triggers into doc-writer; doesn't break anything. Merged 2026-05-04 ahead of original sequence position — landed before S11a/S11b-1/S12.0/S6/S5/S4. Build/fix line counts now 288/291 (12 and 9 lines headroom). Stage 8 maturity-check loop reduced to 3 active checks. |
 | 10 | **E03.S2** (stop-hook-v1 templating) | After S3 to avoid double-touching maturity check section |
 | 11 | **E03.S12a** (docs landing + setup) | Ladders mid-release rather than batch-landing; gated on S12.0 |
 | 12 | **E03.S9** (situation-specific abort prose) | Sweep across pipeline skills; lands late to avoid merge churn |

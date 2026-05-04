@@ -29,7 +29,10 @@ Update the project documentation to capture this knowledge for future runs.
 2. **Understand the new knowledge** — Parse what was discovered and why it matters
 3. **Categorize** — Is this a pitfall, convention, or architectural decision?
 4. **Write concisely** — Add to the appropriate file in the appropriate section
-5. **Deduplicate** — Don't add if something equivalent already exists
+5. **Post-write suggestions (run after any Write or Edit to `.roughly/known-pitfalls.md` in this session; skip otherwise)**:
+   - **Organize suggestion:** Read `.roughly/known-pitfalls.md` and count the lines in the result. If Read fails or returns empty, skip this check. If line count > 80, append a single one-line note to your return summary (NOT to any file): `Note: known-pitfalls.md is now [N] lines — consider reorganizing or deduplicating in a future session.`
+   - **Test-integration suggestion:** First, verify `CLAUDE.md` exists at the project root. If absent, skip this check entirely. Detect test config — any of: `package.json` with a `scripts.test` value not equal to the npm-init default `"echo \"Error: no test specified\" && exit 1"`; `pytest.ini`; `pyproject.toml` containing `[tool.pytest`; any `vitest.config.*` or `jest.config.*`. If detected AND CLAUDE.md's Commands table Test row value indicates no test command (`none`, `none yet`, `n/a`, `N/A`, an em-dash, whitespace-only, or the un-replaced `{{TEST_COMMAND}}` placeholder), append a single one-line note to your return summary (NOT to any file): `Note: project has test config but verify-all skips tests — consider updating CLAUDE.md Commands table Test row.`
+6. **Deduplicate** — Don't add if something equivalent already exists
 
 ## Writing Guidelines
 
