@@ -246,5 +246,8 @@ wc -w agents/doc-writer.md
 
 # Cross-reference sweep
 grep -rn "pitfalls-organized-v1\|test-verify-v1" skills/ agents/ README.md docs/adrs/ docs/ROADMAP.md
-# Expected: 3 hits in ADR-005 (L17 and L21 are existing Decision-section examples, intentional; the new T3 footnote also matches). All hits in skills/, agents/, README.md, and docs/ROADMAP.md must be zero.
+# Expected hits (intentional):
+#   - ADR-005: 3 hits (L17 and L21 are existing Decision-section examples; the new T3 footnote also matches the pattern)
+#   - docs/ROADMAP.md: 1 hit on L55 (the T5 retrospective "✅ Done" line names both retired IDs by design, so future readers can see what was retired)
+# Hits that must be zero: skills/, agents/, README.md.
 ```
