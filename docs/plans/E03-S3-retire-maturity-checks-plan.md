@@ -81,7 +81,7 @@ After insertion, the current "5. **Deduplicate**" line becomes "6. **Deduplicate
 **Important constraints:**
 - Both suggestions are **conditional**: they fire only when the trigger condition is met. Silent on miss.
 - Both suggestions are **return-summary additions**, NOT file modifications. The doc-writer must not write the note into known-pitfalls.md or CLAUDE.md.
-- Detection uses tools the agent already has (`Read`, `Glob`, `Grep`, `Bash`). The frontmatter `tools:` line at line 4 lists `Glob, Grep, Read, Write, Edit` — `Bash` is NOT currently granted. Use `Glob` to test for file presence and `Read` to inspect contents. Do NOT add `Bash` to the tools line. The line-count check must use `Read` (count lines in the result) instead of `wc`.
+- Detection uses tools the agent already has (`Read`, `Glob`, `Grep`). The frontmatter `tools:` line at line 4 lists `Glob, Grep, Read, Write, Edit` — `Bash` is NOT granted. Use `Glob` to test for file presence and `Read` to inspect contents. Do NOT add `Bash` to the tools line. The line-count check must use `Read` (count lines in the result) instead of `wc`.
 - Word budget: the agent file is currently 291 words against a 500-word cap (CLAUDE.md). The additions above must keep the file ≤ 500 words. After editing, run `wc -w agents/doc-writer.md` and confirm.
 
 **Verify:**
