@@ -16,7 +16,11 @@
 set -e
 shopt -s nullglob
 
-ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
+# `|| true` is critical: without it, `set -e` exits the script (with
+# git's own exit code, not 0) when this hook runs outside a git repo,
+# violating the "always exit 0" Stop-hook contract before the empty-root
+# guard below can fire.
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 [ -z "$ROOT" ] && exit 0
 cd "$ROOT"
 

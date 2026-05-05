@@ -57,7 +57,9 @@ Close the `stop-hook-v1` no-op gap. Today, accepting the build/fix Stage 8 offer
 set -e
 shopt -s nullglob
 
-ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
+# `|| true` prevents `set -e` from exiting non-zero when this hook runs
+# outside a git repo, which would violate the always-exit-0 contract.
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 [ -z "$ROOT" ] && exit 0
 cd "$ROOT"
 
