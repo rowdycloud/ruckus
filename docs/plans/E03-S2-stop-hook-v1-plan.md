@@ -4,6 +4,8 @@
 **Branch:** `feat/S03.2-stop-hook-v1-maturity-check`
 **Epic reference:** [docs/planning/epics/E03-trust-and-ergonomics.md](../planning/epics/E03-trust-and-ergonomics.md) lines 184-225
 
+> **POST-MERGE REFINEMENT NOTICE:** This plan describes the *initially-planned* T1-T4 implementation that was approved at Stage 4. After the original commit (`fd1a2ae`), 13+ post-merge fixes refined the design substantially — most notably restructuring Branch 4 into a 4-phase deferred-write commit model (`e9da9be`), adding type-array guards to the merge path (`d1907c0`), runtime fallback in `emit_drift_json` (`50d5ae0`), Stop-hook timeout adjustments, and various rollback/cleanup semantics. **The bash code block in T1 is kept byte-identical with the live template** (last sync: `5652603`), so it always reflects current canonical hook content. **The setup-skill text snippets in T2** (e.g., the Branch 4 "If yes" instructions) **describe the original Edit A and may diverge from current `skills/setup/SKILL.md`** — cross-reference the live file for canonical current behavior. Don't recreate from this plan verbatim without checking commit history.
+
 ## Goal
 
 Close the `stop-hook-v1` no-op gap. Today, accepting the build/fix Stage 8 offer records a workflow-upgrades entry but installs nothing. This story ships the missing template, the setup-skill plumbing, conflict handling, and updates the build/fix Stage 8 offer text.
@@ -170,7 +172,7 @@ Then add a `Stop` hook entry to `.claude/settings.json`:
 
 - If `.claude/settings.json` does not exist OR `.hooks.Stop` is null/absent: add the entry. Use `jq`:
   ```bash
-  jq '.hooks.Stop = [{"hooks":[{"type":"command","command":".claude/hooks/verify-all.sh","timeout":10}]}]' .claude/settings.json > .claude/settings.json.tmp && mv .claude/settings.json.tmp .claude/settings.json
+  jq '.hooks.Stop = [{"hooks":[{"type":"command","command":".claude/hooks/verify-all.sh","timeout":30}]}]' .claude/settings.json > .claude/settings.json.tmp && mv .claude/settings.json.tmp .claude/settings.json
   ```
   (`.claude/settings.json` is guaranteed to exist at this point — Branches 1, 2, or 3 above always create or validate it before Branch 4 runs. No "create file" step needed.)
 
@@ -178,7 +180,7 @@ Then add a `Stop` hook entry to `.claude/settings.json`:
   > "A Stop hook is already configured in .claude/settings.json. Options: (keep) leave existing untouched / (replace) overwrite with verify-all hook / (merge) add verify-all alongside existing (both fire on every turn) / (decline) don't add"
   - **keep:** no-op. Do NOT record acceptance — the offer was effectively withdrawn. Skip the workflow-upgrades write below.
   - **replace:** overwrite via the same jq command above.
-  - **merge:** append using `jq '.hooks.Stop += [{"hooks":[{"type":"command","command":".claude/hooks/verify-all.sh","timeout":10}]}]' ...` (note the `+=` operator — appends to the existing array).
+  - **merge:** first verify `.hooks.Stop` is an array (`jq -e '.hooks.Stop | type == "array"'`) — `+=` errors on non-arrays. If the type guard passes, append using `jq '.hooks.Stop += [{"hooks":[{"type":"command","command":".claude/hooks/verify-all.sh","timeout":30}]}]' ...` (note the `+=` operator — appends to the existing array).
   - **decline:** record `stop-hook-v1-declined` instead of `stop-hook-v1-added`. Skip the hook copy above (delete `.claude/hooks/verify-all.sh` if already written, since user declined the merge step).
 
 If `jq` is unavailable: surface a Step 7 blocking-warning matching the Branch 3 pattern: `WARNING: jq not installed — could not register Stop hook in .claude/settings.json. Install jq and re-run /roughly:setup, or manually add a Stop entry pointing at .claude/hooks/verify-all.sh.`

@@ -236,7 +236,7 @@ Based on detected maturity:
 If yes: record `investigator-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
 **Established + type-check configured (additional offer):**
-If the Step 3 question 3 type-check command is set to a real command (not an opt-out value such as `none`, `none yet`, `n/a`, `skip`, or similar — Step 3 explicitly accepts these as deliberate opt-outs and they MUST be excluded here so the hook is never installed with a non-command value as `{{TYPE_CHECK_COMMAND}}`):
+If the Step 3 question 3 type-check command is a real, runnable command — exclude both deliberate opt-outs (`none`, `none yet`) and any placeholder values that may have slipped past Step 3's gate (`skip`, `n/a`, `TBD`, `TODO`, blank). Step 3 explicitly accepts only `none` and `none yet` as opt-outs (placeholders loop back), but defensive exclusion here matters: if a user manually edited CLAUDE.md to a non-command value post-setup, the hook would otherwise be installed with that string substituted as `{{TYPE_CHECK_COMMAND}}` and would error every turn:
 > "Add a Stop hook? It runs your type-check after every Claude turn — silent on success, surfaces drift via systemMessage. (yes / not yet / never)"
 - **yes:** Branch 4 in Step 5d performs the install AND writes the appropriate `.roughly/workflow-upgrades` record itself. Each Branch 4 outcome (no-conflict install, replace, merge, keep, decline) records `-added` or `-declined` explicitly per its branch — do not write a record here in Step 6 for the yes path.
 - **not yet:** no record (re-offered next build/fix run that hits the gate).
