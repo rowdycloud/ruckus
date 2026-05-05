@@ -186,11 +186,13 @@ Plans **add-new**, **replace**, and **merge** all need a hook file at `.claude/h
 - **overwrite:** proceed.
 - **abort:** record `stop-hook-v1-declined`; preserve user file untouched; return from Branch 4.
 
-**Step D — commit phase (writes happen here, all decisions final).**
+**Step D — commit phase (atomic on success, never destructive on failure).**
 
-Ensure `.claude/hooks/` exists (`mkdir -p .claude/hooks/`); if `mkdir` fails, surface a Step 7 warning and abort with no record. Read `skills/setup/templates/verify-all-stop-hook.sh.template`, replace `{{PROJECT_NAME}}` with the project name and `{{TYPE_CHECK_COMMAND}}` with the Step 3 question 3 type-check command. Write to `.claude/hooks/verify-all.sh` and `chmod +x`.
+The previous staging-then-promote pattern matters here: if Step C's `overwrite` was chosen, a pre-existing user file is at `.claude/hooks/verify-all.sh` and would be lost the moment we write our template content directly. Instead, write to a staging path and only promote to the final path AFTER `jq` succeeds. If anything fails between Steps D's start and end, the user's pre-existing file (if any) remains untouched.
 
-Apply the pre-determined settings-install plan via jq:
+Ensure `.claude/hooks/` exists (`mkdir -p .claude/hooks/`); if `mkdir` fails, surface a Step 7 warning and abort with no record. Read `skills/setup/templates/verify-all-stop-hook.sh.template`, replace `{{PROJECT_NAME}}` with the project name and `{{TYPE_CHECK_COMMAND}}` with the Step 3 question 3 type-check command. Write the substituted content to **`.claude/hooks/verify-all.sh.new`** (NOT to the final path), and `chmod +x` the staging file. Do NOT touch `.claude/hooks/verify-all.sh` yet.
+
+Apply the pre-determined settings-install plan via jq, **referencing the final path** (`.claude/hooks/verify-all.sh`) in the registered command — that path is where the file will live once we promote the staging file at the end:
 
 - **add-new** or **replace:**
   ```bash
@@ -203,9 +205,9 @@ Apply the pre-determined settings-install plan via jq:
 
 (The `timeout` value is in seconds. 30 is a generous default for fast type-checks; users with slower type-checks can hand-edit `.claude/settings.json` to bump it. The earlier dogfood-only value of 10 was too aggressive for arbitrary type-checks and could silently time out without surfacing drift.)
 
-If the jq command fails (disk full, write-locked, race condition), delete the just-written `.claude/hooks/verify-all.sh` to avoid an orphan AND remove `.claude/settings.json.tmp` (jq may have created/truncated it before failing — don't leave half-written files on disk). Surface a Step 7 warning. No `.roughly/workflow-upgrades` record. (Note: this rollback only deletes a file we wrote in Step D — Step C's `abort` path returned before any writes, so we never delete a user file the user told us to preserve.)
+If the jq command fails (disk full, write-locked, race condition), delete the staging file at `.claude/hooks/verify-all.sh.new` AND remove `.claude/settings.json.tmp` (jq may have created/truncated it before failing). The user's pre-existing `.claude/hooks/verify-all.sh` (if any) is untouched. Surface a Step 7 warning. No `.roughly/workflow-upgrades` record.
 
-On success: record `stop-hook-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades`.
+On jq success: promote the staging file with `mv .claude/hooks/verify-all.sh.new .claude/hooks/verify-all.sh` (atomic within the same filesystem — `rename(2)` semantics). This is the only point where a pre-existing user file is replaced. If `mv` fails (extremely rare — would indicate filesystem corruption), the settings.json now references a path with stale or no content; surface a Step 7 warning suggesting a manual re-run, but do not record `-added` (the install isn't actually complete). Record `stop-hook-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades` only after the `mv` succeeds.
 
 ### 5e. workflow-upgrades
 Read the current plugin version from `.claude-plugin/plugin.json` (the `version` field).
