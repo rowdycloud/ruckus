@@ -161,6 +161,8 @@ Only when both checks pass, inspect `.hooks.UserPromptSubmit`:
 
 First check that `jq` is available. If unavailable, surface a Step 7 blocking-warning matching the Branch 3 pattern: `WARNING: jq not installed — could not register Stop hook in .claude/settings.json. Install jq and re-run /roughly:setup, or manually add a Stop entry pointing at .claude/hooks/verify-all.sh.` Abort Branch 4: write nothing to disk and write no `.roughly/workflow-upgrades` record (the offer is re-issued next run when jq is available).
 
+Then validate that the existing `.claude/settings.json` parses cleanly: `jq empty .claude/settings.json`. If parse fails (e.g., Branch 3 above already detected malformed JSON and surfaced a warning but did not repair the file), surface a Step 7 warning: `WARNING: existing .claude/settings.json is invalid JSON — Stop hook not registered. Fix the file and re-run /roughly:setup.` Abort Branch 4 with no hook file write and no `.roughly/workflow-upgrades` record. This validation must happen before any disk writes — otherwise a failed jq merge below leaves the hook file orphaned without a registered Stop entry.
+
 Otherwise: ensure `.claude/hooks/` exists (`mkdir -p .claude/hooks/`); if `mkdir` fails, surface a Step 7 warning and abort the install (no record). Then read `skills/setup/templates/verify-all-stop-hook.sh.template`, replace `{{PROJECT_NAME}}` with the project name and `{{TYPE_CHECK_COMMAND}}` with the Step 3 question 3 type-check command. Write to `.claude/hooks/verify-all.sh` and `chmod +x`.
 
 Then add a `Stop` hook entry to `.claude/settings.json`:
