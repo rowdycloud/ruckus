@@ -44,13 +44,26 @@ emit_drift_json() {
   elif command -v python3 >/dev/null 2>&1; then
     python3 -c 'import json,sys; print(json.dumps({"systemMessage": sys.argv[1]}))' "$m"
   else
-    # Neither encoder available — surface drift as plain text on stderr.
-    # The user sees this in their terminal, but the assistant model does
-    # NOT see it: Claude Code only injects structured stdout JSON via the
-    # systemMessage field into the conversation. Install jq or python3 to
-    # restore full enforcement (model-side visibility of drift). Hook still
-    # exits 0 below.
-    printf 'verify-all: %s\n' "$m" >&2
+    # Neither encoder available — hand-build minimal JSON via bash parameter
+    # expansion (bash 3+ syntax). Without this fallback, drift would be
+    # invisible to the assistant model whenever jq AND python3 are both
+    # missing — defeating the hook's enforcement purpose.
+    #
+    # Pre-strip all U+0000–U+001F control characters except tab/newline/CR
+    # (which we escape explicitly below). This guarantees strict JSON
+    # validity even on input containing ANSI color codes (ESC = 0x1b),
+    # form feed, vertical tab, backspace, etc. Cosmetic residue from
+    # stripped ANSI sequences (e.g., '[31m' fragments) may remain in the
+    # message — the result is a well-formed `systemMessage` the model can
+    # always read; install jq or python3 for fully fidelity.
+    local cleaned
+    cleaned=$(printf '%s' "$m" | LC_ALL=C tr -d '\000-\010\013-\014\016-\037')
+    local escaped="${cleaned//\\/\\\\}"
+    escaped="${escaped//\"/\\\"}"
+    escaped="${escaped//$'\n'/\\n}"
+    escaped="${escaped//$'\t'/\\t}"
+    escaped="${escaped//$'\r'/\\r}"
+    printf '{"systemMessage":"%s"}\n' "$escaped"
   fi
 }
 
