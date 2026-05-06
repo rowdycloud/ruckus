@@ -1,6 +1,6 @@
 # E03 — Trust hardening + ergonomics + CI
 
-**Status:** In Progress (3/16 stories complete — E03.S0 spike merged 2026-05-01 via PR #24 (`e5d630f`); E03.S1 implementation merged 2026-05-02 via PR #25 (`c598ef6`) with follow-up fixes `5b09864`, `a299ada`, `6d268e9`, `2c1436b` through 2026-05-03; E03.S3 retirement merged 2026-05-04 on `feat/S03.3-retire-test-verify-v1` (8 commits, `33bf966` core + 7 follow-up). Mechanism: preamble + `UserPromptSubmit` hook reading `permission_mode` from stdin. Spike-doc API name correction `UserPromptExpansion` → `UserPromptSubmit` recorded in ADR-009 §Spike-Doc Correction. Maturity-check loop reduced from 5 → 3 active checks; coverage-loss gate documented in agents/doc-writer.md.)
+**Status:** In Progress (4/16 stories complete — E03.S0 spike merged 2026-05-01 via PR #24 (`e5d630f`); E03.S1 implementation merged 2026-05-02 via PR #25; E03.S3 retirement merged 2026-05-04 via PR #26 (`48c9f9a`); E03.S2 stop-hook-v1 templating completion merged 2026-05-06 via PR #27 (`a3d7afc`, 24 commits). Trust-hardening cluster now 4/7 done (S0/S1/S2/S3); remaining: S4 pre-flight, S5 CONTRIBUTING prose, S6 plan-format version field. Maturity-check loop reduced from 5 → 3 active checks; `stop-hook-v1` is now an installing offer rather than a no-op. New deferred-investigations catalog seeded with DI-001 (Stage 6 review-depth observation).)
 **Target version:** v0.1.5
 **Target effort:** 6-7 wk
 **Dependencies:** E01 (pipeline foundation, audit follow-up shipped v0.1.3); E02 (rename to `roughly` shipped v0.1.4 — namespace, dotdir, version-line identifier all assumed in place)
@@ -33,9 +33,13 @@ Scope is frozen. Items surfaced during epic writing that are clearly related but
 
 5. **Stop-hook-v1 templating completion (S2).** This repo's [.claude/hooks/verify-all.sh](.claude/hooks/verify-all.sh) is a dogfood instance with project-specific drift checks (line caps for `agents/`, `.ruckus/` legacy detection, etc.) — it is not a plugin-shipped template. The maturity check must template a generic Stop hook into the user's `.claude/`, handling the case where the user already has a Stop hook configured (merge vs prompt vs decline). Risk: under-spec'd templating ships a hook that conflicts with an existing user hook; mitigated by explicit conflict-handling AC in S2.
 
+   **Closure (2026-05-06, post-S2):** Closed. PR #27 (`a3d7afc`, 24 commits) shipped: a generic project-agnostic [skills/setup/templates/verify-all-stop-hook.sh.template](../../../skills/setup/templates/verify-all-stop-hook.sh.template) (~95 lines, fast checks only — type-check default, lint/format opt-in, test/build excluded; bash-3+ compatible; jq → python3 → hand-built JSON 3-tier `emit_drift_json` fallback); a 4-phase transactional commit in [skills/setup/SKILL.md](../../../skills/setup/SKILL.md) Step 5d Branch 4 (Step A read-only validation, Step B settings-conflict decision, Step C file-conflict decision, Step D commit with stage-then-promote + snapshot rollback + cascade-failure handling); Step 6 initial-setup offer for Established projects; build/fix Stage 8 lighter install path that delegates conflict UX to setup. Recording semantics now split: `-added` for successful install/replace/merge, `-declined` for active rejection, no record for passive preservation (re-offered next run).
+
 6. **Skill line-cap ceiling.** [skills/build/SKILL.md](../../skills/build/SKILL.md) is at 296/300 lines, [skills/fix/SKILL.md](../../skills/fix/SKILL.md) at 299/300. The cap is enforced by [.claude/hooks/verify-all.sh:25](../../.claude/hooks/verify-all.sh#L25). S1, S2, S6, S9, and S10 all add lines to these two files; S3 retires two maturity-check blocks for net negative, but the residual headroom is thin. Risk: a story lands and pushes the file past 300, breaking the dogfood Stop hook; mitigated by the line-cap budget contract below.
 
    **Status update (2026-05-04, post-S3):** Risk substantially reduced. S1 was substitution-only (L11; counts preserved at 296/299). S3 deleted two maturity-check blocks: build is now 288/300 (12 lines headroom) and fix 291/300 (9 lines). Remaining additive stories (S2, S6, S9, S10) have meaningful room to operate without invoking the budget contract's prose-extraction off-ramp. Risk does not close — additive cumulative pressure from 4 more stories could still force extraction — but is no longer immediate.
+
+   **Status update (2026-05-06, post-S2):** Risk re-tightens but stays open. S2 added 6 lines to build (288 → 294) and 6 lines to fix (291 → 297) for the restructured Stage 8 stop-hook-v1 block. Headroom now: build 6/300, fix 3/300. [skills/setup/SKILL.md](../../../skills/setup/SKILL.md) grew from 213 to 287 (still under 300, but a 74-line jump). Remaining additive stories on build/fix are S6 (forward-compat single-line addition), S9 (abort prose sweep — extraction likely), S10 (retry-loop tuning — surgical edits, possibly net-zero). S9 is the most likely to invoke the budget contract's prose-extraction off-ramp. The line-cap pressure now applies to setup as well as build/fix.
 
 7. **CI cost.** A full `/roughly:build` cycle in CI invokes Sonnet for orchestration, investigator, plan-reviewer, three parallel review agents, spec-reviewer per task, and code-reviewer at Stage 6. A single happy-path run is plausibly 100K+ Sonnet tokens; at ~100 PR pushes per release cycle, this is non-trivial spend. Risk: CI becomes a hidden release-cost driver; mitigated by S11b-2's minimal-task fixture and explicit token-budget AC.
 
@@ -184,13 +188,45 @@ S1 must first verify, in priority order, the empirical gaps surfaced by S0 (see 
 #### E03.S2: Stop-hook-v1 maturity check completion
 
 **Maps to roadmap item:** #2
+**Status:** Complete on `feat/S03.2-stop-hook-v1-maturity-check`; merged 2026-05-06 via PR #27 (`a3d7afc`, 24 commits — 1 feat + 1 docs + 22 fix/refinement). All 9 ACs met plus 5 review-driven additions beyond the AC list. Closes Risk #5 (templating completion). Deferred-investigations catalog seeded with **DI-001** (Stage 6 review depth vs external review tools) — Stage 6's parallel reviewers closed 7 findings pre-commit; ~17 cubic rounds and a proactive 4-agent parallel review surfaced ~25 additional findings post-commit, all in conceptual buckets the documented pitfalls already cover. DI-001 is candidate for v0.1.6 trust-hardening.
 
-**Files touched:**
-- [skills/build/SKILL.md](../../skills/build/SKILL.md) — Stage 8 maturity check section (`stop-hook-v1` block at L268)
-- [skills/fix/SKILL.md](../../skills/fix/SKILL.md) — Stage 8 maturity check section (`stop-hook-v1` block at L271)
-- [skills/setup/SKILL.md](../../skills/setup/SKILL.md) — Step 5d/5e settings.json handling AND initial setup offer (currently absent)
-- `skills/setup/templates/verify-all-stop-hook.sh.template` (new — generic Stop hook template, **not** the dogfood [.claude/hooks/verify-all.sh](../../.claude/hooks/verify-all.sh) which has roughly-repo-specific checks)
-- [skills/setup/templates/settings.json.template](../../skills/setup/templates/settings.json.template) — Stop hook entry, additive to existing PostToolUse formatter entry
+**Files delivered:**
+
+New:
+- [skills/setup/templates/verify-all-stop-hook.sh.template](../../../skills/setup/templates/verify-all-stop-hook.sh.template) (~95 lines) — generic, project-agnostic Stop hook script. Fast checks only (default: type-check; lint/format opt-in). Bash-3+ compatible. Always exits 0 (informational/non-blocking contract per the Stop-hook output convention). 3-tier `emit_drift_json` runtime fallback: `jq` → `python3` → hand-built JSON via bash parameter expansion + `tr -d` control-char strip.
+- `docs/plans/E03-S2-stop-hook-v1-plan.md` — implementation plan artifact with **POST-MERGE REFINEMENT NOTICE** header documenting that T1's bash block stays byte-synced with the live template while T2's setup-skill snippets describe the original Edit A.
+- [docs/deferred-investigations.md](../../deferred-investigations.md) — new catalog for process/quality observations out-of-scope for the work that surfaced them. Seeded with DI-001.
+
+Modified:
+- [skills/setup/SKILL.md](../../../skills/setup/SKILL.md) — 213 → 287 lines. Added Step 5d Branch 4 with explicit 4-phase transactional commit (Steps A/B/C/D); Step 6 initial-setup offer for Established projects with type-check configured; Step 7 summary line.
+- [skills/build/SKILL.md](../../../skills/build/SKILL.md) — 288 → 294 lines. Stage 8 `stop-hook-v1` block restructured into explicit a–i steps with per-step failure handling and best-effort cleanup; reframed as lighter install path that delegates to setup for full conflict UX.
+- [skills/fix/SKILL.md](../../../skills/fix/SKILL.md) — 291 → 297 lines. Byte-identical to build's Stage 8 block (manual sync per ADR-003 reference-copy pattern).
+- [.roughly/known-pitfalls.md](../../../.roughly/known-pitfalls.md) — 58 → 62 lines. 2 new pitfalls: conflict-prompt cleanup completeness; tool availability validation before file writes.
+- [docs/ROADMAP.md](../../ROADMAP.md) — added "Deferred investigations" section linking to the new catalog.
+
+**Architecture highlights:**
+
+*Setup Branch 4 — 4-phase transactional commit:*
+- **Step A (read-only):** `jq` availability, settings.json parse validity. Missing-file allowed through to Step D's defensive create.
+- **Step B (decision-only, no disk writes):** inspect `.hooks.Stop`. Resolve to install plan: add-new (null/absent/empty array), replace, merge (with array type-guard), keep (passive — no record), decline (active — record `-declined`).
+- **Step C (decision-only):** file-conflict prompt only when plan will write. overwrite (proceed) or abort (passive — no record).
+- **Step D (commit phase):** stage-then-promote with snapshot rollback. Hook written to `.new`, settings.json snapshotted, jq applied, then atomic `mv .new → final`. Cascade rollback handles mv-failure-then-restore-failure with explicit recovery instructions.
+
+*Build/fix Stage 8 — safe-fail with redirect:*
+Lighter install path. Each failure aborts with a directional warning pointing to `/roughly:setup` for the canonical transactional flow. Pre-existing hook file at the canonical path triggers a setup redirect (no overwrite without conflict UX).
+
+*Recording semantics split:*
+- `-added`: no-conflict install / replace / merge succeeded
+- `-declined`: active rejection (Step B decline, Step 6 never) — suppresses build/fix Stage 8 future offers
+- No record: passive preservation (Step B keep, Step C file-conflict abort, Step 6 not yet) — re-offered
+
+**Context:**
+
+`stop-hook-v1` exists as a maturity check stub in build/fix Stage 8 today: "If `.claude/settings.json` has no `Stop` hook AND verify-all has 2+ meaningful checks AND not declined, offer." But there is no template for the hook itself — accepting "yes" today does nothing because the orchestrator has no script to template.
+
+S2 closes the gap: ship a generic Stop hook template, plumb it through setup and the maturity check, and handle conflict with existing user hooks. The dogfood [.claude/hooks/verify-all.sh](../../../.claude/hooks/verify-all.sh) stays as-is (project-specific drift checks for the plugin's own development); this story produces a separate, project-agnostic template.
+
+The Stop hook fires after **every** Claude turn — re-running test/build/full-verify on every turn would be unacceptably heavy. The template is therefore scoped to **fast** verification only.
 
 **Context:**
 
@@ -201,27 +237,37 @@ S2 closes the gap: ship a generic Stop hook template, plumb it through setup and
 The Stop hook fires after **every** Claude turn — re-running test/build/full-verify on every turn would be unacceptably heavy. The template is therefore scoped to **fast** verification only.
 
 **Acceptance criteria:**
-- [ ] New template `skills/setup/templates/verify-all-stop-hook.sh.template` exists. The template runs only **fast** verification (default: type-check, if a type-check command is configured in CLAUDE.md / commands.md). Lint/format checks are opt-in. Test and build commands are explicitly excluded as too heavy for a hook firing on every Claude turn; a comment block at the top of the template states this rationale and tells users where to add slower checks (manual `/roughly:verify-all` invocation, CI, or pre-commit hook)
-- [ ] The template is project-agnostic — no hard-coded paths, line caps, or `.ruckus/` legacy strings; placeholders used where setup must inject project specifics
-- [ ] The template reports drift via `systemMessage` JSON when checks fail (matching the dogfood hook's output contract); silent on success
-- [ ] [skills/setup/SKILL.md](../../skills/setup/SKILL.md) Step 5d (settings.json handling) is updated: when stop-hook-v1 is offered and accepted at initial setup, the Stop hook entry is added to `.claude/settings.json` **without modifying any existing `hooks.PostToolUse` entries** (formatter, etc.)
-- [ ] [skills/setup/SKILL.md](../../skills/setup/SKILL.md) gains a `stop-hook-v1` offer in the initial setup flow (currently only in build/fix wrap-up), gated on the same condition as build/fix
-- [ ] When the user accepts `stop-hook-v1`, the template is copied to `.claude/hooks/<name>.sh` and the `Stop` entry added to the user's `.claude/settings.json`
-- [ ] If `.claude/settings.json` already has a `Stop` hook, the orchestrator prompts: keep existing / replace / merge / decline — no silent overwrite. **Merge** writes both hooks as separate entries in the `Stop` hooks array (using Claude Code's native hook-array support at the matcher level — no wrapper scripts)
-- [ ] Acceptance is recorded as `stop-hook-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades`; decline is recorded as `stop-hook-v1-declined`
-- [ ] The build/fix Stage 8 `stop-hook-v1` offer text is updated to reflect the new templating path (no longer a no-op)
+- [x] New template [skills/setup/templates/verify-all-stop-hook.sh.template](../../../skills/setup/templates/verify-all-stop-hook.sh.template) exists. Fast checks only — type-check default; lint/format opt-in; test/build excluded with rationale comment block at the top of the template.
+- [x] Template is project-agnostic — placeholders used where setup must inject project specifics; bash-3+ compatible.
+- [x] Template reports drift via `systemMessage` JSON when checks fail; silent on success; always exits 0 (informational/non-blocking contract).
+- [x] [skills/setup/SKILL.md](../../../skills/setup/SKILL.md) Step 5d updated with Branch 4 (4-phase transactional commit) — Stop hook entry is added to `.claude/settings.json` without modifying existing `hooks.PostToolUse` entries.
+- [x] [skills/setup/SKILL.md](../../../skills/setup/SKILL.md) Step 6 gains `stop-hook-v1` offer in the initial setup flow, gated on the same condition as build/fix.
+- [x] On accept, template copied to `.claude/hooks/verify-all-stop-hook.sh` and `Stop` entry added to `.claude/settings.json` via stage-then-promote with snapshot rollback.
+- [x] Conflict prompt: keep / replace / merge / decline — no silent overwrite. **Merge** uses Claude Code's native hook-array support (no wrapper scripts).
+- [x] `stop-hook-v1-added YYYY-MM-DD` recorded for install/replace/merge; `stop-hook-v1-declined` for active rejection (Step B decline, Step 6 never); no record for passive preservation (re-offered).
+- [x] Build/fix Stage 8 `stop-hook-v1` block restructured into explicit a–i steps with per-step failure handling; reframed as lighter install path that delegates to setup for full conflict UX.
 
-**Verification:**
-- Dogfood `/roughly:setup` in a fresh project that has no `.claude/settings.json`; accept the offer; confirm hook file written, settings entry added, and `.roughly/workflow-upgrades` updated
-- Dogfood `/roughly:setup` in a project that already has a `Stop` hook; confirm the conflict prompt appears and each branch behaves correctly
-- Manually trigger the templated hook (`bash .claude/hooks/<name>.sh`) and confirm it reports drift correctly when verify-all fails
+**Additional refinements beyond AC list (review-driven):**
+- [x] Stage-then-promote atomicity emerged from data-loss findings (not in original AC).
+- [x] Settings.json snapshot rollback with cascade-failure handling.
+- [x] `TYPE_CHECK_COMMAND` empty-substitution validation.
+- [x] Defensive `{"hooks":{}}` creation when settings.json missing pre-Branch-4.
+- [x] Opt-out exclusion list parity between setup Step 6 and build/fix Stage 8.
 
-**Dependencies:** S3 (retire test-verify-v1 / pitfalls-organized-v1) lands first to avoid double-touching the maturity check section.
+**Verification (delivered):**
+- Plan review (Stage 4): PASS in 1 iteration.
+- In-pipeline review (Stage 6): 2 cycles closed 7 findings.
+- Post-merge cubic rounds: ~17 rounds surfaced ~25 additional findings, all valid (captured as DI-001).
+- Proactive 4-agent parallel review near end of branch caught ~13 distinct issues at one go.
+- All line caps clean (build 294, fix 297, setup 287; all ≤300); build/fix block parity preserved; plan ↔ template byte-identical; dogfood Stop hook silent; cubic clean.
 
-**Out of scope:**
-- Replacing the dogfood [.claude/hooks/verify-all.sh](../../.claude/hooks/verify-all.sh) with the templated version
-- Bumping `stop-hook-v1` to v2 (no change of behavior justifies a version bump per ADR-005)
-- Cross-platform Stop hook support beyond bash (Windows users out of v0.1.5 threat model)
+**Dependencies:** S3 (retire test-verify-v1 / pitfalls-organized-v1) — landed first per the original sequencing constraint.
+
+**Out of scope (carried forward as v0.1.6 candidates where applicable):**
+- Replacing the dogfood [.claude/hooks/verify-all.sh](../../../.claude/hooks/verify-all.sh) with the templated version — but the dogfood hook carries the same `set -e` + `git rev-parse` latent bug the original template did. Worth a separate cleanup commit; tracked in [v0.1.6 candidates](#v016-candidates).
+- Stop-hook timeout tuning (set to 30s; user-tunable).
+- Cross-platform Stop hook support beyond bash (Windows users out of v0.1.5 threat model).
+- Bumping `stop-hook-v1` to v2 (no semantic change to the offer; per ADR-005 no version bump warranted).
 
 ---
 
@@ -788,6 +834,9 @@ Items surfaced during epic writing that are clearly related to v0.1.5 work but e
 - **Pre-existing typo `docs/adr/` (singular) at [agents/doc-writer.md:24](../../../agents/doc-writer.md#L24)** — flagged by code-reviewer during S3, predates S3 (origin commit `6b05dcd` in S02.3). One-line fix; slot into the next doc-cleanup story.
 - **Pre-existing markdown lint sweep across `docs/ROADMAP.md`, `docs/planning/epics/*`, `agents/doc-writer.md`** — captured as a pitfall pattern during S3 (commit `9440ecb`); not auto-fixed since lint warnings are unrelated to changed lines. Candidate for a one-shot lint-cleanup story when convenient.
 - **ADR-005 footnote terminology drift** — cosmetic vocabulary mismatch between user-response (`add`/`decline`) and plugin-action (`version-bump`) terminology in the v0.1.5 retirement footnote. Code-reviewer flagged as low-confidence cosmetic; left as-is for S3 but worth tightening when ADR-005 next gets edited.
+- **DI-001: Stage 6 review depth vs external review tools.** Surfaced in S2: Stage 6's parallel reviewers closed 7 findings pre-commit, while ~17 cubic rounds and a proactive 4-agent parallel review surfaced ~25 additional valid findings post-commit, all in conceptual buckets the documented pitfalls already cover. Five hypotheses (prompt narrowness, model tier per ADR-008, iteration cap, missing review dimensions, inverse-of-existing-pitfall) and four investigation directions captured in [docs/deferred-investigations.md](../../deferred-investigations.md). Candidate placement: v0.1.6 trust-hardening cluster.
+- **Dogfood [.claude/hooks/verify-all.sh](../../../.claude/hooks/verify-all.sh) cleanup** — apply S2's template fixes (`set -e` removal + `|| true` on `git rev-parse`) to the project-specific dogfood hook. Same latent bug pattern as the original S2 template; out of S2 scope per AC. One-shot cleanup commit.
+- **General-pattern lift from S2 review** — the "every conditional branch enumerates state cleanup" and "validate prerequisites before mutations (including input file validity)" patterns may warrant a short ADR or stronger surfacing in agent briefs (DI-001 hypothesis #4).
 
 ---
 
@@ -806,7 +855,7 @@ Order is by dependency, not roadmap item number.
 | 7 | **E03.S5** (CONTRIBUTING prose) | Independent, prose-only; slot anywhere |
 | 8 | **E03.S4** (pre-flight in audit-epic + verify-all) | Independent of pipeline changes |
 | 9 | **E03.S3** (retire test-verify-v1 / pitfalls-organized-v1) ✅ | Folds triggers into doc-writer; doesn't break anything. Merged 2026-05-04 ahead of original sequence position — landed before S11a/S11b-1/S12.0/S6/S5/S4. Build/fix line counts now 288/291 (12 and 9 lines headroom). Stage 8 maturity-check loop reduced to 3 active checks. |
-| 10 | **E03.S2** (stop-hook-v1 templating) | After S3 to avoid double-touching maturity check section |
+| 10 | **E03.S2** (stop-hook-v1 templating) ✅ | After S3 to avoid double-touching maturity check section. Merged 2026-05-06 via PR #27 (`a3d7afc`, 24 commits). 4-phase transactional commit in setup Step 5d Branch 4; lighter install path in build/fix Stage 8. Build/fix line counts now 294/297; setup 287. DI-001 (Stage 6 review-depth observation) seeded in new deferred-investigations catalog. |
 | 11 | **E03.S12a** (docs landing + setup) | Ladders mid-release rather than batch-landing; gated on S12.0 |
 | 12 | **E03.S9** (situation-specific abort prose) | Sweep across pipeline skills; lands late to avoid merge churn |
 | 13 | **E03.S10** (retry-loop tuning) | Late; benefits from CI regression coverage from S11 |
