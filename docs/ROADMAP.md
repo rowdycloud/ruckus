@@ -39,6 +39,10 @@ Primary user through v1.0: solo dev first, teams second. Team adoption is downst
 
 Continuous from v0.1.5. Every release's DoD includes a docs update for user-visible changes. Floor for v0.1.5: landing page, pipeline overview, commands reference, setup walkthrough.
 
+## Deferred investigations
+
+Process and quality observations surfaced during execution but out of scope for the work that surfaced them are tracked in [docs/deferred-investigations.md](deferred-investigations.md). Distinct from this roadmap (which is committed work) — investigations are noticed-but-not-yet-evaluated. Pull from the catalog when scoping each release.
+
 ---
 
 # Release scope

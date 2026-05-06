@@ -156,7 +156,74 @@ Only when both checks pass, inspect `.hooks.UserPromptSubmit`:
 
 ---
 
-<!-- Future S2 additions: append Stop-hook registration as a fourth sub-step below -->
+**Branch 4 — stop-hook-v1 was accepted in Step 6 below:**
+(This branch runs only if the Step 6 offer was accepted. Execution order is 5a→5b→5c→5d Branches 1–3→6→5d Branch 4→5e→7. If declined or not offered, skip.)
+
+**Branch 4 invariant — collect ALL decisions BEFORE any disk mutations.** This branch can prompt the user twice (settings-conflict and file-conflict). Every prompt outcome must be resolved into a final install plan BEFORE we write or delete any file. Otherwise the second prompt's abort path can destroy state the first prompt's choice authorized only conditionally.
+
+**Step A — read-only checks (no disk writes).**
+
+First check that `jq` is available. If unavailable, surface a Step 7 blocking-warning matching the Branch 3 pattern: `WARNING: jq not installed — could not install Stop hook. Install jq and re-run /roughly:setup.` Abort Branch 4: write nothing to disk and write no `.roughly/workflow-upgrades` record. Do NOT direct the user toward a manual install path — Branch 4 writes nothing on this branch.
+
+If `.claude/settings.json` exists, validate it parses cleanly: `jq empty .claude/settings.json`. If parse fails (file exists but JSON is malformed), surface a Step 7 warning: `WARNING: existing .claude/settings.json is invalid JSON — Stop hook not registered. Fix the file and re-run /roughly:setup.` Abort with no record. If `.claude/settings.json` does NOT exist, do NOT abort — proceed to Step D, where item 3's defensive-creation path will produce a minimal valid file before jq runs. (Branches 1/2/3 above always *create* settings.json or *leave a pre-existing file* in place before Branch 4 runs, but Branch 3's jq-unavailable and parse-fail halt paths leave the existing file unvalidated — Step A re-validates parse health independently because that invariant is strictly weaker than "create-or-validate." Defensive handling for "missing entirely" lives in Step D so this read-only step doesn't need to write.)
+
+**Step B — settings-conflict resolution (prompt may fire; no disk writes yet).**
+
+The binary question this step resolves is: **does the user already have a Stop hook configured?** Two outcomes only — "no Stop hook" (the no-conflict path) or "Stop hook present" (prompt for conflict resolution). Use the file inspection below to decide; do NOT inspect via `jq` if `.claude/settings.json` does not exist (jq errors on missing files) — instead treat missing-file as "no Stop hook" (logically the same as `.hooks.Stop` being absent).
+
+Inspect `.hooks.Stop`:
+
+- **No Stop hook configured** — `.claude/settings.json` is missing, OR `.hooks.Stop` is null, absent (`.hooks.Stop` field doesn't exist in the JSON), or an empty array (`[]`): plan is **add-new** (jq command will be `'.hooks.Stop = [...]'`). Skip the conflict prompt entirely.
+- **Stop hook configured** — `.hooks.Stop` is a non-empty array (i.e., it contains one or more existing entries): prompt the human:
+  > "A Stop hook is already configured in .claude/settings.json. Options: (keep) leave existing untouched / (replace) overwrite with verify-all hook / (merge) add verify-all alongside existing (both fire on every turn) / (decline) don't add"
+  - **keep:** plan is **abort-passive**. Do NOT write the hook file, do NOT modify `.claude/settings.json`, do NOT delete any pre-existing `.claude/hooks/verify-all.sh`, and **do NOT record** `stop-hook-v1-declined` (this was passive preservation of an existing Stop hook, not active rejection — recording `-declined` would suppress build/fix Stage 8's offer per its `not declined` gate, which would be too permanent for "I have my own hook right now"). Return from Branch 4. (Note: build/fix Stage 8's gate also self-suppresses when `.hooks.Stop` is non-empty, so re-prompts won't loop the user.)
+  - **decline:** plan is **abort-declined** (active rejection). Record `stop-hook-v1-declined` in `.roughly/workflow-upgrades` (matches Step 6's `never` semantics — suppresses future build/fix Stage 8 offers). Do NOT write the hook file, do NOT modify `.claude/settings.json`, do NOT delete any pre-existing `.claude/hooks/verify-all.sh`. Return from Branch 4.
+  - **replace:** plan is **replace** (jq command `'.hooks.Stop = [...]'`).
+  - **merge:** verify `.hooks.Stop` is an array (`jq -e '.hooks.Stop | type == "array"' .claude/settings.json`); if not (e.g., a hand-edited single object), surface a Step 7 warning: `WARNING: .claude/settings.json .hooks.Stop is not an array — cannot merge. Convert to array form manually and re-run.` Abort with no `.roughly/workflow-upgrades` record (no disk writes have occurred in Step B). If the array check passes: plan is **merge** (jq command `'.hooks.Stop += [...]'`).
+- `.hooks.Stop` exists but is not an array: surface a Step 7 warning: `WARNING: .claude/settings.json .hooks.Stop is not an array (Claude Code hooks contract requires array form) — Stop hook not registered. Fix manually and re-run.` Abort with no record.
+
+**Step C — file-conflict prompt (only fires when plan will write the hook file).**
+
+Plans **add-new**, **replace**, and **merge** all need a hook file at `.claude/hooks/verify-all.sh`. Check whether the file already exists. If it does, prompt:
+> "A `.claude/hooks/verify-all.sh` already exists. Options: (overwrite) replace with the verify-all template — your existing file content will be lost / (abort) preserve the existing file and skip Stop-hook installation (no record — re-offered next setup or build/fix run)"
+- **overwrite:** proceed.
+- **abort:** preserve user file untouched. **Do NOT record** `stop-hook-v1-declined` (passive preservation, parallel to Step B's `keep` — recording would too-permanently suppress build/fix Stage 8 future offers). Return from Branch 4.
+
+**Step D — commit phase (transactional: all-or-nothing).**
+
+The previous staging-then-promote pattern matters here: if Step C's `overwrite` was chosen, a pre-existing user file is at `.claude/hooks/verify-all.sh` and would be lost the moment we write our template content directly. Step D writes to a staging path, takes a settings.json snapshot before mutating it, applies jq, promotes the staging file, and only commits the install if every step succeeds. If anything fails, the user is rolled back to a clean state: pre-existing user files at `.claude/hooks/verify-all.sh` remain byte-identical, and `.claude/settings.json` is restored to its pre-Step-D content (with one carve-out: if the snapshot step below — Step D's item 3, NOT the setup skill's top-level Step 3 — had to defensively create settings.json because the user originally had no file, rollback leaves a minimal `{"hooks":{}}` instead of restoring "no file"; the originally-empty hook configuration is recoverable but the bare-no-file precondition is not).
+
+1. Ensure `.claude/hooks/` exists (`mkdir -p .claude/hooks/`); if `mkdir` fails, surface a Step 7 warning and abort with no record. No other state has been touched yet.
+2. Read `skills/setup/templates/verify-all-stop-hook.sh.template`, replace `{{PROJECT_NAME}}` with the project name and `{{TYPE_CHECK_COMMAND}}` with the Step 3 question 3 type-check command. **Validate** that `{{TYPE_CHECK_COMMAND}}` substitutes to a non-empty, real command (an empty substitution would produce a `if !` block with no command, causing a bash syntax error and silent no-op). If empty: surface a Step 7 warning that the type-check command is missing from CLAUDE.md and abort with no record. Write the substituted content to **`.claude/hooks/verify-all.sh.new`** (NOT to the final path), and `chmod +x` the staging file. If the file write or `chmod` fails (read-only filesystem, quota, permissions): rm the partial `.new` file (best-effort; if rm also fails, surface a Step 7 warning naming the orphan path), abort with no record. Do NOT touch `.claude/hooks/verify-all.sh` yet.
+3. Snapshot the current settings.json so we have a rollback target.
+   - If `.claude/settings.json` does not exist (unexpected per the Branch 1/2/3 invariant — those branches always create settings.json or leave an existing file in place — but defensive for enrich-mode races and external deletions): first create a minimal valid settings.json for jq to modify: `printf '%s' '{"hooks":{}}' > .claude/settings.json`. If this `printf` redirect fails (read-only filesystem, quota, etc.), abort: rm the staging `.new` file (best-effort), surface a Step 7 warning naming "could not create .claude/settings.json" with the underlying error, no record. **Track that we created it** (a boolean — call it `defensive_create`); this affects rollback behavior: when `defensive_create` is true, restoring the snapshot leaves a benign `{"hooks":{}}` rather than the pre-Step-D "no file" state — empty hook configuration is recoverable, file-absent precondition is not.
+   - Then snapshot: `cp .claude/settings.json .claude/settings.json.pre-stop-hook` (distinct from `.claude/settings.json.tmp` which jq uses internally). This snapshot is the rollback target if any later step fails.
+   - If `cp` fails, abort: rm the staging `.new` file, surface a Step 7 warning with the cp error, no record.
+4. Apply the pre-determined settings-install plan via jq, **referencing the final path** (`.claude/hooks/verify-all.sh`) in the registered command — that path is where the file will live once we promote the staging file at the end:
+
+   - **add-new** or **replace:**
+     ```bash
+     jq '.hooks.Stop = [{"hooks":[{"type":"command","command":".claude/hooks/verify-all.sh","timeout":30}]}]' .claude/settings.json > .claude/settings.json.tmp && mv .claude/settings.json.tmp .claude/settings.json
+     ```
+   - **merge:**
+     ```bash
+     jq '.hooks.Stop += [{"hooks":[{"type":"command","command":".claude/hooks/verify-all.sh","timeout":30}]}]' .claude/settings.json > .claude/settings.json.tmp && mv .claude/settings.json.tmp .claude/settings.json
+     ```
+
+   (The `timeout` value is in seconds. 30 is a generous default for fast type-checks; users with slower type-checks can hand-edit `.claude/settings.json` to bump it. The earlier dogfood-only value of 10 was too aggressive for arbitrary type-checks and could silently time out without surfacing drift.)
+
+5. If the jq command fails (disk full, write-locked, race condition): rm the staging `.new` file, rm `.claude/settings.json.tmp` (jq may have created/truncated it), rm the snapshot `.claude/settings.json.pre-stop-hook` (settings.json was never modified, so the snapshot is unused). Surface a Step 7 warning. No record.
+6. On jq success: promote the staging file with `mv .claude/hooks/verify-all.sh.new .claude/hooks/verify-all.sh` (atomic within the same filesystem — `rename(2)` semantics). This is the only point where a pre-existing user file is replaced.
+
+   If `mv` fails (typical causes: insufficient permissions on `.claude/hooks/`, read-only filesystem, file locked by another process, full disk / ENOSPC, or quota exceeded — surface the underlying error message in the warning so the user can address the specific cause):
+   - **Restore settings.json from the snapshot:** `mv .claude/settings.json.pre-stop-hook .claude/settings.json` — `mv` is atomic on the same filesystem and the source file remains in place if it fails (so the snapshot is recoverable either way). If THIS restore-mv ALSO fails (cascade failure — likely the same underlying cause that made the first mv fail, e.g., the disk just went read-only), surface a STRONG Step 7 warning with explicit recovery instructions: "Could not auto-restore .claude/settings.json. The pre-install snapshot is preserved at .claude/settings.json.pre-stop-hook; recover manually with `mv .claude/settings.json.pre-stop-hook .claude/settings.json` once the underlying issue (e.g., disk full, permissions) is addressed. Settings.json currently references .claude/hooks/verify-all.sh which does not exist; the Stop hook will error every Claude turn until restoration is complete."
+   - rm the leftover `.claude/hooks/verify-all.sh.new` (best-effort).
+   - Surface a Step 7 warning that includes the `mv` error and suggests addressing the underlying cause and re-running.
+   - No `.roughly/workflow-upgrades` record (the install is fully rolled back when the cascade-recovery succeeds; partially rolled back if the cascade-recovery itself failed — the strong warning above documents that case).
+
+   On the **happy rollback path** (cascade-recovery `mv` succeeds), this restores the user's pre-Step-D state: settings.json has its original contents, the staging file is gone, the user's pre-existing `.claude/hooks/verify-all.sh` (if any) is untouched. On the **failed cascade-recovery path** (the second `mv` also failed), the snapshot remains on disk for manual recovery and settings.json may still reference a missing hook — the strong warning above documents this case explicitly so the orchestrator does NOT treat a partial recovery as a clean rollback.
+
+7. On full success (mv succeeded): rm `.claude/settings.json.pre-stop-hook` (no longer needed). Record `stop-hook-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades`.
 
 ### 5e. workflow-upgrades
 Read the current plugin version from `.claude-plugin/plugin.json` (the `version` field).
@@ -186,6 +253,13 @@ Based on detected maturity:
 > "Project is established ([N] files). Enable the investigator agent for `/roughly:fix`? It traces code paths to diagnose bugs. (yes / not yet)"
 If yes: record `investigator-v1-added YYYY-MM-DD` in `.roughly/workflow-upgrades`. The agent definition ships with the plugin — no file copy needed.
 
+**Established + type-check configured (additional offer):**
+If the Step 3 question 3 type-check command is a real, runnable command — exclude both deliberate opt-outs (`none`, `none yet`) and any placeholder values that may have slipped past Step 3's gate (`skip`, `n/a`, `TBD`, `TODO`, blank). Step 3 explicitly accepts only `none` and `none yet` as opt-outs (placeholders loop back), but defensive exclusion here matters: if a user manually edited CLAUDE.md to a non-command value post-setup, the hook would otherwise be installed with that string substituted as `{{TYPE_CHECK_COMMAND}}` and would error every turn:
+> "Add a Stop hook? It runs your type-check after every Claude turn — silent on success, surfaces drift via systemMessage. (yes / not yet / never)"
+- **yes:** Branch 4 in Step 5d performs the install AND writes the appropriate `.roughly/workflow-upgrades` record itself. Branch 4 outcomes record per their branch: no-conflict install, replace, and merge record `stop-hook-v1-added`; decline records `stop-hook-v1-declined`; keep and Step C's file-conflict abort write **no record** (passive preservation of pre-existing state, not active rejection — see Step B's `keep` rationale). Do not write a record here in Step 6 for the yes path; Branch 4 owns recording.
+- **not yet:** no record (re-offered next build/fix run that hits the gate).
+- **never:** record `stop-hook-v1-declined` in `.roughly/workflow-upgrades`.
+
 ---
 
 ## STEP 7: SUMMARY
@@ -202,8 +276,9 @@ Display what was created:
 - .claudeignore — keeps context lean
 - .claude/hooks/plan-mode-gate.sh — blocks /roughly:build and /roughly:fix when plan mode is active (ADR-009)
 - .claude/settings.json — [formatter hook configured / minimal with plan-mode-gate / merged with existing]
+- .claude/hooks/verify-all.sh — Stop hook running type-check after every Claude turn [INCLUDE this line ONLY if `stop-hook-v1-added` was recorded; OMIT entirely otherwise]
 
-[Surface any Step 5d Branch 3 blocking-warnings here, prefixed with WARNING:]
+[Surface any Step 5d blocking-warnings (Branches 3 and 4) here, prefixed with WARNING:]
 
 **Next steps:**
 - Run `/roughly:build` for your first feature
