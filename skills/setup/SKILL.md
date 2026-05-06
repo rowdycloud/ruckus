@@ -169,10 +169,12 @@ If `.claude/settings.json` exists, validate it parses cleanly: `jq empty .claude
 
 **Step B — settings-conflict resolution (prompt may fire; no disk writes yet).**
 
-Inspect `.hooks.Stop` and resolve to a settings-install plan:
+The binary question this step resolves is: **does the user already have a Stop hook configured?** Two outcomes only — "no Stop hook" (the no-conflict path) or "Stop hook present" (prompt for conflict resolution). Use the file inspection below to decide; do NOT inspect via `jq` if `.claude/settings.json` does not exist (jq errors on missing files) — instead treat missing-file as "no Stop hook" (logically the same as `.hooks.Stop` being absent).
 
-- `.hooks.Stop` is null, absent, or an empty array (`[]`): plan is **add-new** (jq command will be `'.hooks.Stop = [...]'`).
-- `.hooks.Stop` is a non-empty array: prompt the human:
+Inspect `.hooks.Stop`:
+
+- **No Stop hook configured** — `.claude/settings.json` is missing, OR `.hooks.Stop` is null, absent (`.hooks.Stop` field doesn't exist in the JSON), or an empty array (`[]`): plan is **add-new** (jq command will be `'.hooks.Stop = [...]'`). Skip the conflict prompt entirely.
+- **Stop hook configured** — `.hooks.Stop` is a non-empty array (i.e., it contains one or more existing entries): prompt the human:
   > "A Stop hook is already configured in .claude/settings.json. Options: (keep) leave existing untouched / (replace) overwrite with verify-all hook / (merge) add verify-all alongside existing (both fire on every turn) / (decline) don't add"
   - **keep:** plan is **abort-passive**. Do NOT write the hook file, do NOT modify `.claude/settings.json`, do NOT delete any pre-existing `.claude/hooks/verify-all.sh`, and **do NOT record** `stop-hook-v1-declined` (this was passive preservation of an existing Stop hook, not active rejection — recording `-declined` would suppress build/fix Stage 8's offer per its `not declined` gate, which would be too permanent for "I have my own hook right now"). Return from Branch 4. (Note: build/fix Stage 8's gate also self-suppresses when `.hooks.Stop` is non-empty, so re-prompts won't loop the user.)
   - **decline:** plan is **abort-declined** (active rejection). Record `stop-hook-v1-declined` in `.roughly/workflow-upgrades` (matches Step 6's `never` semantics — suppresses future build/fix Stage 8 offers). Do NOT write the hook file, do NOT modify `.claude/settings.json`, do NOT delete any pre-existing `.claude/hooks/verify-all.sh`. Return from Branch 4.
